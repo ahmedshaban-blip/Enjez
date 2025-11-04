@@ -35,7 +35,7 @@ export default function Login() {
         if (userRole === 'admin') {
           navigate('/admin');
         } else if (userRole === 'user') {
-          navigate('/user');
+          navigate('/home');
         } else {
           navigate('/');
         }
