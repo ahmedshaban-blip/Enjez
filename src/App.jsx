@@ -1,18 +1,9 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import Login from "./pages/auth/Login";
+
+// import Signup from "./pages/auth/Signup";
 
 function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <h1>Welcome My team in Enjez WebSite Project</h1>
-      </div>
-    </>
-  )
+  return <Login />;
 }
 
-export default App
+export default App;
