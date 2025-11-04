@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from "react-router-dom";
 
 const ManageServicesPage = () => {
   return (
@@ -30,6 +31,7 @@ const MainContent = () => {
 
 
 const PageHeader = () => {
+  const navigate = useNavigate();
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
       <div className="flex flex-col gap-2">
@@ -40,7 +42,7 @@ const PageHeader = () => {
           View, add, edit, and delete services available on the platform.
         </p>
       </div>
-      <button className="w-full md:w-auto flex items-center justify-center gap-2 overflow-hidden rounded-xl h-14 px-6 bg-blue-600 text-white text-base font-bold leading-normal tracking-[0.015em] shadow-sm hover:bg-blue-700 focus:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all">
+      <button onClick={() => navigate("/admin/add-service")} className="w-full md:w-auto flex items-center justify-center gap-2 overflow-hidden rounded-xl h-14 px-6 bg-blue-600 text-white text-base font-bold leading-normal tracking-[0.015em] shadow-sm hover:bg-blue-700 focus:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all">
         <span className="material-symbols-outlined text-2xl">add</span>
         <span className="truncate">Add New Service</span>
       </button>

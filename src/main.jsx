@@ -14,6 +14,7 @@ import Clients from "./pages/admin/Clients.jsx";
 import Services from "./pages/admin/Services.jsx";
 import Reports from "./pages/admin/Reports.jsx";
 import Settings from "./pages/admin/Settings.jsx";
+import AddService from "./pages/admin/AddService.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -35,6 +36,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           <Route path="services" element={<Services />} />
           <Route path="reports" element={<Reports />} />
           <Route path="settings" element={<Settings />} />
+          <Route path="add-service" element={<AddService />} />
         </Route>
       </Routes>
     </BrowserRouter>
