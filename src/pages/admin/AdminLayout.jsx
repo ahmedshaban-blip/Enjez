@@ -1,7 +1,8 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import AdminSidebar from "../../components/layout/AdminSidebar.jsx";
 
 export default function AdminLayout() {
+  const location = useLocation();
   return (
     <div className="min-h-screen bg-slate-50 flex font-sans">
       {/* Sidebar component */}
@@ -10,6 +11,7 @@ export default function AdminLayout() {
       {/* Right side */}
       <div className="flex-1 ml-64 flex flex-col">
         {/* Topbar */}
+        {location.pathname === "/admin" && (
         <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8">
           <h2 className="text-xl font-bold text-slate-900">Dashboard</h2>
 
@@ -49,6 +51,7 @@ export default function AdminLayout() {
             </div>
           </div>
         </header>
+        )}
 
         {/* Page content */}
         <main className="flex-1 p-8 bg-slate-50">
