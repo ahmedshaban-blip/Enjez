@@ -34,11 +34,11 @@ export default function Signup() {
         createdAt: new Date()
       });
 
-      alert('تم التسجيل بنجاح!');
+      alert('Done! You can now log in.');
       navigate('/login');
     } catch (error) {
       setError(error.message);
-      console.error('خطأ في التسجيل:', error);
+      console.error('Error creating Account:', error);
     }
   };
 

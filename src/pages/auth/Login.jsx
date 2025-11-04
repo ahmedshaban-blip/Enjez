@@ -40,11 +40,10 @@ export default function Login() {
           navigate('/');
         }
       } else {
-        setError('لا توجد بيانات للمستخدم');
+        setError('No user data found.');
       }
     } catch (error) {
-      setError('خطأ في تسجيل الدخول: ' + error.message);
-      console.error('خطأ:', error);
+      setError('Error signing in:' + error.message);
     }
   };
 
