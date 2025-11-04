@@ -1,3 +1,5 @@
+import logo from "../../assets/logo.png";
+
 export default function Footer() {
   return (
     <footer className="w-full bg-neutral-100 dark:bg-neutral-900 border-t border-border-light dark:border-border-dark mt-20">
@@ -5,11 +7,9 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
           <div className="col-span-2 lg:col-span-1">
             <div className="flex items-center gap-2 mb-4">
-              <span className="material-symbols-outlined text-primary text-2xl">
-                book_online
-              </span>
+              <img src={logo} alt="Enjez logo" className="h-8 w-8 object-contain" />
               <h2 className="text-text-light dark:text-text-dark text-lg font-bold">
-                ServiceBook
+                Enjez
               </h2>
             </div>
             <p className="text-sm text-text-light/70 dark:text-text-dark/70">
@@ -55,7 +55,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 pt-8 border-t border-border-light dark:border-border-dark flex flex-col sm:flex-row justify-between items-center text-sm text-text-light/50 dark:text-text-dark/50">
-          <p>© 2024 ServiceBook. All rights reserved.</p>
+          <p>© 2024 Enjez. All rights reserved.</p>
           <div className="flex gap-4 mt-4 sm:mt-0">{/* Social icons */}</div>
         </div>
       </div>

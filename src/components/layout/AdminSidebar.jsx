@@ -1,14 +1,13 @@
 // src/components/layout/AdminSidebar.jsx
 import { NavLink, Link } from "react-router-dom";
+import logo from "../../assets/logo.png";
 
 export default function AdminSidebar() {
   return (
     <aside className="fixed left-0 top-0 h-screen w-64 bg-white border-r border-slate-200 flex flex-col">
       <div className="flex items-center gap-3 px-6 py-5 border-b border-slate-200">
-        <div className="flex items-center justify-center size-8 bg-blue-600 rounded-lg text-white">
-          <span className="material-symbols-outlined text-xl">view_quilt</span>
-        </div>
-        <h1 className="text-xl font-bold text-slate-900">Service Platform</h1>
+        <img src={logo} alt="Enjez logo" className="h-8 w-8 object-contain" />
+        <h1 className="text-xl font-bold text-slate-900">Enjez</h1>
       </div>
 
       <div className="flex-1 flex flex-col justify-between px-3 py-4">

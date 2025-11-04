@@ -1,4 +1,5 @@
 import { Link, NavLink } from "react-router-dom";
+import logo from "../../assets/logo.png";
 
 export default function Navbar() {
   return (
@@ -6,10 +7,8 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto h-16 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Logo */}
         <Link to="/home" className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-blue-600 text-3xl">
-            book_online
-          </span>
-          <span className="text-xl font-bold text-slate-900">ServiceBook</span>
+          <img src={logo} alt="Enjez logo" className="h-9 w-9 object-contain" />
+          <span className="text-xl font-bold text-slate-900">Enjez</span>
         </Link>
 
         {/* Links */}

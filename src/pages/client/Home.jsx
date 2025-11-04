@@ -216,7 +216,7 @@ export default function Home() {
                 alt="Happy customer"
               />
               <blockquote className="text-xl md:text-2xl font-medium italic text-slate-800">
-                “Using ServiceBook was a game-changer. I found a fantastic
+                “Using Enjez was a game-changer. I found a fantastic
                 cleaner in minutes and my apartment has never looked better.
                 Highly recommend for anyone with a busy schedule!”
               </blockquote>
@@ -254,7 +254,7 @@ export default function Home() {
                   book_online
                 </span>
                 <h2 className="text-slate-900 text-lg font-bold">
-                  ServiceBook
+                  Enjez
                 </h2>
               </div>
               <p className="text-sm text-slate-500">
@@ -306,7 +306,7 @@ export default function Home() {
           </div>
 
           <div className="mt-8 pt-6 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-400">
-            <p>© 2025 ServiceBook. All rights reserved.</p>
+            <p>© 2025 Enjez. All rights reserved.</p>
           </div>
         </div>
       </footer>
