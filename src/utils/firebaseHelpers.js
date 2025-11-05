@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import { collection, addDoc, getDocs, Timestamp } from "firebase/firestore";
 import { db } from "../config/firebase.js";
 
 // ===== Default structures =====
@@ -7,9 +7,14 @@ export const defaultService = {
   name: "",
   description: "",
   images: [],
-  categoryId: "", // reference to category / each service belongs to one category
+  categoryId: "", // reference to category (Another Collection) / each service belongs to one category
   price: 0,
-  agents: [] // array of agent IDs
+  agents: [], // array of agent IDs (Another Collection)
+  duration: "",
+  isActive: true,
+  reviews: [], // array of review IDs (Another Collection)
+  createdAt: Timestamp,
+  updatedAt: Timestamp
 };
 
 export const defaultBooking = {
