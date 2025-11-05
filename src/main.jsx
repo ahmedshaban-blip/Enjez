@@ -16,9 +16,13 @@ import AdminServices from "./pages/admin/Services.jsx"; // 👈 admin services
 import Reports from "./pages/admin/Reports.jsx";
 import Settings from "./pages/admin/Settings.jsx";
 import AddService from "./pages/admin/AddService.jsx";
+import { LoadingProvider } from "./context/LoadingContext.jsx";
+import { ModalProvider } from "./context/ModalContext.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
+    <LoadingProvider>
+      <ModalProvider>
     <BrowserRouter>
       <Routes>
         {/* redirect root to /home (lowercase to match the route) */}
@@ -44,5 +48,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         </Route>
       </Routes>
     </BrowserRouter>
+    </ModalProvider>
+    </LoadingProvider>
   </React.StrictMode>
 );
