@@ -6,12 +6,13 @@ import Login from "./pages/auth/Login.jsx";
 import Signup from "./pages/auth/Signup.jsx";
 import "./index.css";
 import Home from "./pages/client/Home.jsx";
+import ClientServices from "./pages/client/Services.jsx"; // 👈 client services page
 
 import AdminLayout from "./pages/admin/AdminLayout.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import Bookings from "./pages/admin/Bookings.jsx";
 import Clients from "./pages/admin/Clients.jsx";
-import Services from "./pages/admin/Services.jsx";
+import AdminServices from "./pages/admin/Services.jsx"; // 👈 admin services
 import Reports from "./pages/admin/Reports.jsx";
 import Settings from "./pages/admin/Settings.jsx";
 import AddService from "./pages/admin/AddService.jsx";
@@ -24,9 +25,12 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <ModalProvider>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/Home" replace />} />
+        {/* redirect root to /home (lowercase to match the route) */}
+        <Route path="/" element={<Navigate to="/home" replace />} />
 
+        {/* client pages */}
         <Route path="/home" element={<Home />} />
+        <Route path="/services" element={<ClientServices />} />
 
         {/* login & signup */}
         <Route path="/login" element={<App />} />
@@ -37,7 +41,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           <Route index element={<AdminDashboard />} />
           <Route path="bookings" element={<Bookings />} />
           <Route path="clients" element={<Clients />} />
-          <Route path="services" element={<Services />} />
+          <Route path="services" element={<AdminServices />} />
           <Route path="reports" element={<Reports />} />
           <Route path="settings" element={<Settings />} />
           <Route path="add-service" element={<AddService />} />
