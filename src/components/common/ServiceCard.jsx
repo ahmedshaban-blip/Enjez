@@ -2,6 +2,7 @@
 
 export default function ServiceCard({ service }) {
   const { name, description, images, price } = service || {};
+  const categoryName = service?._categoryName || service?.categoryName || service?.category || "";
 
   const imageUrl =
     Array.isArray(images) && images.length > 0
@@ -23,6 +24,10 @@ export default function ServiceCard({ service }) {
         <h3 className="text-base font-semibold text-slate-900 truncate">
           {displayName}
         </h3>
+
+        {categoryName && (
+          <p className="text-xs text-slate-500">{categoryName}</p>
+        )}
 
         {hasPrice && (
           <p className="text-sm font-medium text-blue-600">
