@@ -1,18 +1,77 @@
-import React from 'react';
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getAllDocs } from "../../utils/firebaseHelpers";
 
+// Helper to format price values
+const formatPrice = (value) => {
+  if (value === undefined || value === null || value === "") return "—";
+  const number = Number(value);
+  return Number.isFinite(number) ? `$${number.toFixed(2)}` : String(value);
+};
+
+// Helper to format duration stored in minutes
+const formatDuration = (minutes) => {
+  if (!minutes && minutes !== 0) return "—";
+  const total = Number(minutes);
+  if (!Number.isFinite(total)) return "—";
+  const hrs = Math.floor(total / 60);
+  const mins = total % 60;
+  if (hrs && mins) return `${hrs}h ${mins}m`;
+  if (hrs) return `${hrs}h`;
+  return `${mins}m`;
+};
+
+// Helper to convert Firestore Timestamp/string to readable date
+const formatCreatedAt = (value) => {
+  if (!value) return "—";
+  let date;
+  if (value.seconds) {
+    date = new Date(value.seconds * 1000);
+  } else if (value.toDate) {
+    date = value.toDate();
+  } else {
+    date = new Date(value);
+  }
+  return Number.isNaN(date.getTime()) ? "—" : date.toLocaleDateString();
+};
+
+// Top-level page component handles Firestore fetching and state
 const ManageServicesPage = () => {
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadServices = async () => {
+      try {
+        const data = await getAllDocs("services");
+        if (!isMounted) return;
+        setServices(Array.isArray(data) ? data : []);
+        setError("");
+      } catch (err) {
+        console.error("Failed to load services:", err);
+        if (isMounted) setError("Unable to load services. Please try again.");
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    loadServices();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   return (
     <div className="relative flex min-h-screen w-full overflow-hidden">
-      <MainContent />
+      <MainContent services={services} loading={loading} error={error} />
     </div>
   );
 };
 
-
-
-
-const MainContent = () => {
+const MainContent = ({ services, loading, error }) => {
   return (
     <main className="flex-1 p-4 sm:p-6 lg:p-10">
       <div className="mx-auto max-w-7xl">
@@ -20,7 +79,7 @@ const MainContent = () => {
         <div className="bg-white dark:bg-gray-900/50 rounded-lg sm:rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">
           <ServicesToolbar />
           <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
-            <ServicesTable />
+            <ServicesTable services={services} loading={loading} error={error} />
           </div>
           <Pagination />
         </div>
@@ -28,7 +87,6 @@ const MainContent = () => {
     </main>
   );
 };
-
 
 const PageHeader = () => {
   const navigate = useNavigate();
@@ -42,7 +100,10 @@ const PageHeader = () => {
           View, add, edit, and delete services available on the platform.
         </p>
       </div>
-      <button onClick={() => navigate("/admin/add-service")} className="w-full md:w-auto flex items-center justify-center gap-2 overflow-hidden rounded-xl h-14 px-6 bg-blue-600 text-white text-base font-bold leading-normal tracking-[0.015em] shadow-sm hover:bg-blue-700 focus:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all">
+      <button
+        onClick={() => navigate("/admin/add-service")}
+        className="w-full md:w-auto flex items-center justify-center gap-2 overflow-hidden rounded-xl h-14 px-6 bg-blue-600 text-white text-base font-bold leading-normal tracking-[0.015em] shadow-sm hover:bg-blue-700 focus:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
+      >
         <span className="material-symbols-outlined text-2xl">add</span>
         <span className="truncate">Add New Service</span>
       </button>
@@ -50,13 +111,12 @@ const PageHeader = () => {
   );
 };
 
-
 const ServicesToolbar = () => {
   return (
     <div className="p-4 border-b border-gray-200 dark:border-gray-800">
       <div className="flex flex-col md:flex-row gap-4">
         <div className="flex-1">
-             <label className="flex flex-col w-full">
+          <label className="flex flex-col w-full">
             <div className="group flex w-full flex-1 items-stretch rounded-lg bg-gray-100 dark:bg-gray-800 transition-all duration-200 hover:bg-gray-200 dark:hover:bg-gray-700">
               <div className="flex items-center justify-center pl-4 text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-400 transition-colors duration-200">
                 <span className="material-symbols-outlined text-xl">search</span>
@@ -100,8 +160,8 @@ const ServicesToolbar = () => {
   );
 };
 
-
-const ServicesTable = () => {
+// Table now renders Firestore data dynamically while preserving styling
+const ServicesTable = ({ services, loading, error }) => {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -120,7 +180,7 @@ const ServicesTable = () => {
               </div>
             </th>
             <th scope="col" className="px-6 py-3">
-              Service Name
+              Service
             </th>
             <th scope="col" className="px-6 py-3">
               Category
@@ -140,165 +200,117 @@ const ServicesTable = () => {
           </tr>
         </thead>
         <tbody>
-          <tr className="bg-white dark:bg-gray-900/50 hover:bg-gray-50 dark:hover:bg-gray-800/50 border-b dark:border-gray-800">
-            <td className="w-4 p-4">
-              <div className="flex items-center">
-                <input
-                  id="checkbox-table-1"
-                  type="checkbox"
-                  className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary dark:focus:ring-primary dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                />
-                <label htmlFor="checkbox-table-1" className="sr-only">
-                  checkbox
-                </label>
-              </div>
-            </td>
-            <th
-              scope="row"
-              className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-            >
-              Deep Tissue Massage
-            </th>
-            <td className="px-6 py-4">Wellness</td>
-            <td className="px-6 py-4">$120</td>
-            <td className="px-6 py-4">60 min</td>
-            <td className="px-6 py-4">
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
-                Active
-              </span>
-            </td>
-            <td className="px-6 py-4">
-              <div className="flex items-center gap-3">
-                <button className="text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-white">
-                  <span className="material-symbols-outlined">edit</span>
-                </button>
-                <button className="text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-500">
-                  <span className="material-symbols-outlined">delete</span>
-                </button>
-              </div>
-            </td>
-          </tr>
-          <tr className="bg-white dark:bg-gray-900/50 hover:bg-gray-50 dark:hover:bg-gray-800/50 border-b dark:border-gray-800">
-            <td className="w-4 p-4">
-              <div className="flex items-center">
-                <input
-                  id="checkbox-table-2"
-                  type="checkbox"
-                  className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary dark:focus:ring-primary dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                />
-                <label htmlFor="checkbox-table-2" className="sr-only">
-                  checkbox
-                </label>
-              </div>
-            </td>
-            <th
-              scope="row"
-              className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-            >
-              Business Consultation
-            </th>
-            <td className="px-6 py-4">Consulting</td>
-            <td className="px-6 py-4">$250/hr</td>
-            <td className="px-6 py-4">60 min</td>
-            <td className="px-6 py-4">
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
-                Active
-              </span>
-            </td>
-            <td className="px-6 py-4">
-              <div className="flex items-center gap-3">
-                <button className="text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-white">
-                  <span className="material-symbols-outlined">edit</span>
-                </button>
-                <button className="text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-500">
-                  <span className="material-symbols-outlined">delete</span>
-                </button>
-              </div>
-            </td>
-          </tr>
-          <tr className="bg-white dark:bg-gray-900/50 hover:bg-gray-50 dark:hover:bg-gray-800/50 border-b dark:border-gray-800">
-            <td className="w-4 p-4">
-              <div className="flex items-center">
-                <input
-                  id="checkbox-table-3"
-                  type="checkbox"
-                  className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary dark:focus:ring-primary dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                />
-                <label htmlFor="checkbox-table-3" className="sr-only">
-                  checkbox
-                </label>
-              </div>
-            </td>
-            <th
-              scope="row"
-              className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-            >
-              Yoga Class (Group)
-            </th>
-            <td className="px-6 py-4">Fitness</td>
-            <td className="px-6 py-4">$25</td>
-            <td className="px-6 py-4">75 min</td>
-            <td className="px-6 py-4">
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
-                Inactive
-              </span>
-            </td>
-            <td className="px-6 py-4">
-              <div className="flex items-center gap-3">
-                <button className="text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-white">
-                  <span className="material-symbols-outlined">edit</span>
-                </button>
-                <button className="text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-500">
-                  <span className="material-symbols-outlined">delete</span>
-                </button>
-              </div>
-            </td>
-          </tr>
-          <tr className="bg-white dark:bg-gray-900/50 hover:bg-gray-50 dark:hover:bg-gray-800/50">
-            <td className="w-4 p-4">
-              <div className="flex items-center">
-                <input
-                  id="checkbox-table-4"
-                  type="checkbox"
-                  className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary dark:focus:ring-primary dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                />
-                <label htmlFor="checkbox-table-4" className="sr-only">
-                  checkbox
-                </label>
-              </div>
-            </td>
-            <th
-              scope="row"
-              className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-            >
-              Web Design Package
-            </th>
-            <td className="px-6 py-4">Digital</td>
-            <td className="px-6 py-4">$1500</td>
-            <td className="px-6 py-4">Project</td>
-            <td className="px-6 py-4">
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
-                Pending
-              </span>
-            </td>
-            <td className="px-6 py-4">
-              <div className="flex items-center gap-3">
-                <button className="text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-white">
-                  <span className="material-symbols-outlined">edit</span>
-                </button>
-                <button className="text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-500">
-                  <span className="material-symbols-outlined">delete</span>
-                </button>
-              </div>
-            </td>
-          </tr>
+          {loading ? (
+            <tr>
+              <td colSpan={7} className="px-6 py-10 text-center">
+                Loading services…
+              </td>
+            </tr>
+          ) : error ? (
+            <tr>
+              <td colSpan={7} className="px-6 py-10 text-center text-red-500">
+                {error}
+              </td>
+            </tr>
+          ) : services.length === 0 ? (
+            <tr>
+              <td colSpan={7} className="px-6 py-10 text-center">
+                No services available.
+              </td>
+            </tr>
+          ) : (
+            services.map((service) => {
+              const imageSrc =
+                (Array.isArray(service.images) && service.images[0]) ||
+                service.imageUrl ||
+                null;
+              const categoryName =
+                service._categoryName ||
+                service.categoryName ||
+                service.category ||
+                service.categoryId ||
+                "—";
+              const isActive =
+                service.isActive === undefined ? true : Boolean(service.isActive);
+
+              return (
+                <tr
+                  key={service.id}
+                  className="bg-white dark:bg-gray-900/50 hover:bg-gray-50 dark:hover:bg-gray-800/50 border-b dark:border-gray-800"
+                >
+                  <td className="w-4 p-4">
+                    <div className="flex items-center">
+                      <input
+                        id={`checkbox-${service.id}`}
+                        type="checkbox"
+                        className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary dark:focus:ring-primary dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      />
+                      <label htmlFor={`checkbox-${service.id}`} className="sr-only">
+                        checkbox
+                      </label>
+                    </div>
+                  </td>
+                  <th
+                    scope="row"
+                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                  >
+                    <div className="flex items-center gap-4">
+                      {imageSrc ? (
+                        <img
+                          src={imageSrc}
+                          alt={`${service.name || "Service"} thumbnail`}
+                          className="h-12 w-12 rounded-lg object-cover border border-gray-200 dark:border-gray-700"
+                        />
+                      ) : (
+                        <div className="h-12 w-12 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-400">
+                          <span className="material-symbols-outlined">image</span>
+                        </div>
+                      )}
+                      <div>
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                          {service.name || "Untitled service"}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Created: {formatCreatedAt(service.createdAt)}
+                        </p>
+                      </div>
+                    </div>
+                  </th>
+                  <td className="px-6 py-4">{categoryName}</td>
+                  <td className="px-6 py-4">{formatPrice(service.price)}</td>
+                  <td className="px-6 py-4">{formatDuration(service.duration)}</td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        isActive
+                          ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
+                          : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+                      }`}
+                    >
+                      {isActive ? "Active" : "Inactive"}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <button className="text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-white">
+                        <span className="material-symbols-outlined">edit</span>
+                      </button>
+                      <button className="text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-500">
+                        <span className="material-symbols-outlined">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })
+          )}
         </tbody>
       </table>
     </div>
   );
 };
 
-// أزرار التنقل بين الصفحات
+// Pagination UI left untouched (no data wiring yet)
 const Pagination = () => {
   return (
     <nav
@@ -306,9 +318,9 @@ const Pagination = () => {
       aria-label="Table navigation"
     >
       <span className="text-sm font-normal text-gray-500 dark:text-gray-400 text-center sm:text-left">
-        Showing{' '}
-        <span className="font-semibold text-gray-900 dark:text-white">1-4</span>{' '}
-        of{' '}
+        Showing{" "}
+        <span className="font-semibold text-gray-900 dark:text-white">1-4</span>{" "}
+        of{" "}
         <span className="font-semibold text-gray-900 dark:text-white">100</span>
       </span>
       <ul className="inline-flex items-center -space-x-px">
@@ -350,7 +362,9 @@ const Pagination = () => {
             href="#"
             className="px-2 sm:px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white flex items-center"
           >
-            <span className="material-symbols-outlined text-sm sm:text-base">chevron_right</span>
+            <span className="material-symbols-outlined text-sm sm:text-base">
+              chevron_right
+            </span>
           </a>
         </li>
       </ul>
