@@ -19,6 +19,7 @@ import AdminServices from "./pages/admin/Services.jsx";
 import Reports from "./pages/admin/Reports.jsx";
 import Settings from "./pages/admin/Settings.jsx";
 import AddService from "./pages/admin/AddService.jsx";
+import Notifications from "./pages/admin/Notifications.jsx";
 import { LoadingProvider } from "./context/LoadingContext.jsx";
 import { ModalProvider } from "./context/ModalContext.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
@@ -62,6 +63,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                 <Route path="reports" element={<Reports />} />
                 <Route path="settings" element={<Settings />} />
                 <Route path="add-service" element={<AddService />} />
+                <Route path="notifications" element={<Notifications />} />
               </Route>
             </Routes>
           </ModalProvider>
