@@ -1,6 +1,6 @@
 // src/components/layout/AdminSidebar.jsx
 import { NavLink, Link } from "react-router-dom";
-import logo from "../../assets/logo.png";
+import logo from "../../assets/logo2.svg";
 
 export default function AdminSidebar() {
   return (

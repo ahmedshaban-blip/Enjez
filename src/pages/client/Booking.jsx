@@ -3,7 +3,7 @@ import Navbar from "../../components/layout/Navbar";
 import { Timestamp } from "firebase/firestore";
 import { useNavigate, useParams } from "react-router-dom";
 import { getAllDocs, createBooking } from "../../utils/firebaseHelpers.js";
-import { useAuth } from "../../context/AuthContext.jsx";
+import { useAuth } from "../../components/authContext.jsx";
 import { useLoading } from "../../context/LoadingContext.jsx";
 import { useModal } from "../../context/ModalContext.jsx";
 
@@ -27,7 +27,6 @@ export default function RequestBooking() {
     "01:00 PM", "02:00 PM", "03:00 PM", "04:00 PM",
   ];
 
-  // Fetch service details + related agents
   useEffect(() => {
     const fetchData = async () => {
       try {
