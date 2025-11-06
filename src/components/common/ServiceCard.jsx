@@ -1,7 +1,9 @@
 // src/components/common/ServiceCard.jsx
+import { useNavigate } from 'react-router-dom';
 
 export default function ServiceCard({ service }) {
-  const { name, description, images, price } = service || {};
+  const navigate = useNavigate();
+  const { name, description, images, price, id } = service || {};
   const categoryName = service?._categoryName || service?.categoryName || service?.category || "";
 
   const imageUrl =
@@ -14,8 +16,17 @@ export default function ServiceCard({ service }) {
   const hasPrice =
     price !== undefined && price !== null && price !== "" && !Number.isNaN(Number(price));
 
+  const handleClick = () => {
+    console.log('Clicked service with ID:', id);
+    console.log('Full service object:', service);
+    navigate(`/services/${id}`);
+  };
+
   return (
-    <article className="flex flex-col rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+    <article 
+      onClick={handleClick}
+      className="flex flex-col rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden cursor-pointer"
+    >
       <div
         className="w-full bg-center bg-no-repeat bg-cover aspect-video"
         style={{ backgroundImage: `url("${imageUrl}")` }}

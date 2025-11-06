@@ -7,6 +7,7 @@ import Signup from "./pages/auth/Signup.jsx";
 import "./index.css";
 import Home from "./pages/client/Home.jsx";
 import ClientServices from "./pages/client/Services.jsx"; // 👈 client services page
+import ServicesDetails from "./pages/client/ServicesDetails.jsx";
 
 import AdminLayout from "./pages/admin/AdminLayout.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
@@ -34,6 +35,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             {/* client pages */}
             <Route path="/home" element={<Home />} />
             <Route path="/services" element={<ClientServices />} />
+            <Route path="/services/:id" element={<ServicesDetails />} />
             <Route path="/booking" element={<RequestBooking />} />
             <Route path="/booking/confirmation" element={<BookingConfirmation />} />
             <Route path="/mybookings" element={<MyBookings />} />
