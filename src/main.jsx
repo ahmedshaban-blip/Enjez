@@ -19,14 +19,14 @@ import AdminServices from "./pages/admin/Services.jsx";
 import Reports from "./pages/admin/Reports.jsx";
 import Settings from "./pages/admin/Settings.jsx";
 import AddService from "./pages/admin/AddService.jsx";
-
 import { LoadingProvider } from "./context/LoadingContext.jsx";
 import { ModalProvider } from "./context/ModalContext.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
-
 import RequestBooking from "./pages/client/Booking.jsx";
 import BookingConfirmation from "./pages/client/Confirmation.jsx";
 import MyBookings from "./pages/client/MyBookings.jsx";
+
+
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
