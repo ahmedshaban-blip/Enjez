@@ -8,7 +8,7 @@ export default function BookingConfirmation() {
     <div className="font-display bg-background-light dark:bg-background-dark text-[#111318] dark:text-white flex flex-col">
       <Navbar />
       {/* Main content */}
-      <main className="flex flex-1 justify-center  px-4">
+      <main className="flex flex-1 justify-center px-4">
         <div className="flex flex-col w-full max-w-[720px] items-center gap-8">
           {/* Success message */}
           <div className="flex flex-col items-center gap-6 text-center">
@@ -30,7 +30,7 @@ export default function BookingConfirmation() {
           </div>
 
           {/* Booking details */}
-          <div className="w-full bg-white dark:bg-background-dark/50 p-6 sm:p-8 rounded-xl border border-black/10 dark:border-white/10 flex flex-col gap-6">
+          <div className="w-full bg-white dark:bg-background-dark/50 p-4 sm:p-6 rounded-xl border border-black/10 dark:border-white/10 flex flex-col gap-6">
             <div className="flex items-center justify-between gap-4">
               <p className="text-lg font-bold">Booking Details</p>
               <div className="flex items-center gap-2 rounded-full bg-orange-100 dark:bg-orange-900/40 text-orange-600 dark:text-orange-300 px-3 py-1 text-sm font-medium">
@@ -47,6 +47,8 @@ export default function BookingConfirmation() {
                 ["Date & Time", "October 26, 2024 at 2:00 PM"],
                 ["Provider", "Tranquil Spa & Wellness"],
                 ["Reference ID", "BK-8675309"],
+                ["Address", "123 Main St, City, State"],
+                ["Phone", "+201 234 567 890"],
               ].map(([label, value]) => (
                 <div key={label} className="flex flex-col gap-1">
                   <p className="text-[#616f89] dark:text-gray-400 text-sm">
@@ -59,7 +61,7 @@ export default function BookingConfirmation() {
           </div>
 
           {/* Buttons */}
-          <div className="w-full flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+          <div className="w-full flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
             <button onClick={() => navigate("/mybookings")} className="min-w-[180px] w-full sm:w-auto h-12 px-6 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-700 transition">
               View My Bookings
             </button>
@@ -69,7 +71,7 @@ export default function BookingConfirmation() {
           </div>
 
           {/* Footer links */}
-          <div className="w-full border-t border-black/10 dark:border-white/10 mt-6 pt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
+          <div className="w-full border-t border-black/10 dark:border-white/10 mt-4 pt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
             {[
               ["event", "Add to Calendar"],
               ["print", "Print Confirmation"],
