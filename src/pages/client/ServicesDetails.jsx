@@ -208,7 +208,7 @@ const ServiceDetailsPage = () => {
                       </p>
                       <Link 
                         to={`/booking/${service?.id}`}
-                        className="w-full mt-6 flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 transition-colors"
+                        className="w-full mt-6 flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-blue-600 text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-blue-700 transition-colors"
                       >
                         <span className="truncate">Book This Service</span>
                       </Link>
