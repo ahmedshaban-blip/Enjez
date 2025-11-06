@@ -1,4 +1,4 @@
-import { supabase } from '../config/supabase'
+import { supabase } from '../config/supabase.js'
 
 async function uploadImage(file) {
   const fileName = `${Date.now()}_${file.name}`
@@ -20,3 +20,5 @@ async function uploadImage(file) {
 
   return publicUrlData.publicUrl
 }
+
+export default uploadImage;

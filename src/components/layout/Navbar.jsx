@@ -1,7 +1,27 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.png";
+import { useAuth } from "../../context/AuthContext.jsx";
+import { getAuth, signOut } from "firebase/auth";
 
 export default function Navbar() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      const auth = getAuth();
+      await signOut(auth);
+      navigate("/login");
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
+
+  // نجيب اسم لطيف نعرضه
+  const username =
+    user?.displayName ||
+    (user?.email ? user.email.split("@")[0] : "User");
+
   return (
     <header className="w-full border-b border-slate-200 bg-white">
       <div className="max-w-7xl mx-auto h-16 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
@@ -23,6 +43,7 @@ export default function Navbar() {
           >
             Home
           </NavLink>
+
           <NavLink
             to="/services"
             className={({ isActive }) =>
@@ -33,6 +54,7 @@ export default function Navbar() {
           >
             Services
           </NavLink>
+
           <NavLink
             to="/how-it-works"
             className={({ isActive }) =>
@@ -43,6 +65,7 @@ export default function Navbar() {
           >
             How It Works
           </NavLink>
+
           <NavLink
             to="/about"
             className={({ isActive }) =>
@@ -51,27 +74,56 @@ export default function Navbar() {
               }`
             }
           >
-            About Us
+            About
+          </NavLink>
+
+          <NavLink
+            to="/contact"
+            className={({ isActive }) =>
+              `hover:text-blue-600 ${
+                isActive ? "text-blue-600 font-semibold" : ""
+              }`
+            }
+          >
+            Contact
           </NavLink>
         </nav>
 
-        {/* Auth buttons */}
-        <div className="flex items-center gap-2">
-          {/* Login: text blue + baby blue background */}
-          <Link
-            to="/login"
-            className="h-10 px-5 rounded-full border border-blue-200 bg-blue-100 text-blue-600 text-sm font-semibold flex items-center justify-center hover:bg-blue-200 transition-colors"
-          >
-            Log In
-          </Link>
+        {/* Auth buttons / welcome + logout */}
+        <div className="flex items-center gap-3">
+          {!user && (
+            <>
+              {/* Log in: حدود زرقاء ونص أزرق */}
+              <Link
+                to="/login"
+                className="h-10 px-5 rounded-full border border-blue-600 text-blue-600 text-sm font-medium flex items-center justify-center hover:bg-blue-50 transition-colors"
+              >
+                Log In
+              </Link>
 
-          {/* Sign up: white text + blue background */}
-          <Link
-            to="/signup"
-            className="h-10 px-5 rounded-full bg-blue-600 text-white text-sm font-semibold flex items-center justify-center hover:bg-blue-700 transition-colors"
-          >
-            Sign Up
-          </Link>
+              {/* Sign up: خلفية زرقاء ونص أبيض */}
+              <Link
+                to="/signup"
+                className="h-10 px-5 rounded-full bg-blue-600 text-white text-sm font-medium flex items-center justify-center hover:bg-blue-700 transition-colors"
+              >
+                Sign Up
+              </Link>
+            </>
+          )}
+
+          {user && (
+            <>
+              <span className="hidden sm:inline text-sm text-slate-700">
+                Welcome, <span className="font-semibold">{username}</span>
+              </span>
+              <button
+                onClick={handleLogout}
+                className="h-10 px-5 rounded-full border border-slate-300 text-sm font-medium text-slate-700 flex items-center justify-center hover:bg-slate-100 transition-colors"
+              >
+                Logout
+              </button>
+            </>
+          )}
         </div>
       </div>
     </header>
