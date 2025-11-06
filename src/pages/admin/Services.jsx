@@ -1,14 +1,15 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllDocs } from "../../utils/firebaseHelpers";
 
-// ===== Helper functions =====
+// Helper to format price values
 const formatPrice = (value) => {
   if (value === undefined || value === null || value === "") return "—";
   const number = Number(value);
   return Number.isFinite(number) ? `$${number.toFixed(2)}` : String(value);
 };
 
+// Helper to format duration stored in minutes
 const formatDuration = (minutes) => {
   if (!minutes && minutes !== 0) return "—";
   const total = Number(minutes);
@@ -20,133 +21,57 @@ const formatDuration = (minutes) => {
   return `${mins}m`;
 };
 
+// Helper to convert Firestore Timestamp/string to readable date
 const formatCreatedAt = (value) => {
   if (!value) return "—";
   let date;
-  if (value.seconds) date = new Date(value.seconds * 1000);
-  else if (value.toDate) date = value.toDate();
-  else date = new Date(value);
+  if (value.seconds) {
+    date = new Date(value.seconds * 1000);
+  } else if (value.toDate) {
+    date = value.toDate();
+  } else {
+    date = new Date(value);
+  }
   return Number.isNaN(date.getTime()) ? "—" : date.toLocaleDateString();
 };
 
-// ===== Main Page =====
+// Top-level page component handles Firestore fetching and state
 const ManageServicesPage = () => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const perPage = 5;
 
   useEffect(() => {
     let isMounted = true;
+
     const loadServices = async () => {
       try {
         const data = await getAllDocs("services");
         if (!isMounted) return;
-        if (Array.isArray(data) && data.length > 0) {
-          setServices(data);
-          setError("");
-        } else {
-          setError("No services found in Firestore.");
-        }
+        setServices(Array.isArray(data) ? data : []);
+        setError("");
       } catch (err) {
         console.error("Failed to load services:", err);
-        if (isMounted)
-          setError("Unable to load services. Please try again later.");
+        if (isMounted) setError("Unable to load services. Please try again.");
       } finally {
         if (isMounted) setLoading(false);
       }
     };
+
     loadServices();
     return () => {
       isMounted = false;
     };
   }, []);
 
-  // فلترة البيانات من Firebase فقط
-  const filteredServices = useMemo(() => {
-    let list = services;
-
-    // بحث
-    if (searchTerm) {
-      const q = searchTerm.toLowerCase();
-      list = list.filter(
-        (s) =>
-          s.name?.toLowerCase().includes(q) ||
-          s.categoryName?.toLowerCase().includes(q) ||
-          s.category?.toLowerCase().includes(q)
-      );
-    }
-
-    // فلتر الكاتيجوري
-    if (categoryFilter) {
-      const selected = categoryFilter.toLowerCase().trim();
-      list = list.filter((s) => {
-        const categoryValue =
-          (s.categoryName ||
-            s._categoryName ||
-            s.category ||
-            s.categoryId ||
-            "")
-            .toString()
-            .toLowerCase()
-            .trim();
-        return (
-          categoryValue === selected || categoryValue.includes(selected)
-        );
-      });
-    }
-
-    return list;
-  }, [services, searchTerm, categoryFilter]);
-
-  // Pagination logic
-  const total = filteredServices.length;
-  const start = (currentPage - 1) * perPage;
-  const paginated = filteredServices.slice(start, start + perPage);
-
-  // Reset page when filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, categoryFilter]);
-
   return (
     <div className="relative flex min-h-screen w-full overflow-hidden">
-      <MainContent
-        services={paginated}
-        loading={loading}
-        error={error}
-        allServices={services}
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        categoryFilter={categoryFilter}
-        setCategoryFilter={setCategoryFilter}
-        total={total}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-        perPage={perPage}
-      />
+      <MainContent services={services} loading={loading} error={error} />
     </div>
   );
 };
 
-// ===== Main Layout =====
-const MainContent = ({
-  services,
-  loading,
-  error,
-  allServices,
-  searchTerm,
-  setSearchTerm,
-  categoryFilter,
-  setCategoryFilter,
-  total,
-  currentPage,
-  setCurrentPage,
-  perPage,
-}) => {
+const MainContent = ({ services, loading, error }) => {
   return (
     <main className="flex-1 p-4 sm:p-6 lg:p-10">
       <div className="mx-auto max-w-7xl">
@@ -174,7 +99,6 @@ const MainContent = ({
   );
 };
 
-// ===== Header =====
 const PageHeader = () => {
   const navigate = useNavigate();
   return (
@@ -198,23 +122,7 @@ const PageHeader = () => {
   );
 };
 
-// ===== Toolbar with Search + Category Filter =====
-const ServicesToolbar = ({
-  searchTerm,
-  setSearchTerm,
-  categoryFilter,
-  setCategoryFilter,
-  services,
-}) => {
-  const categories = useMemo(() => {
-    const unique = new Set(
-      services
-        .map((s) => s.categoryName || s.category || s._categoryName)
-        .filter(Boolean)
-    );
-    return Array.from(unique);
-  }, [services]);
-
+const ServicesToolbar = () => {
   return (
     <div className="p-4 border-b border-gray-200 dark:border-gray-800">
       <div className="flex flex-col md:flex-row gap-4">
@@ -255,20 +163,43 @@ const ServicesToolbar = ({
   );
 };
 
-// ===== Table =====
+// Table now renders Firestore data dynamically while preserving styling
 const ServicesTable = ({ services, loading, error }) => {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-800 dark:text-gray-400">
           <tr>
-            <th className="p-4"></th>
-            <th className="px-6 py-3">Service</th>
-            <th className="px-6 py-3">Category</th>
-            <th className="px-6 py-3">Price</th>
-            <th className="px-6 py-3">Duration</th>
-            <th className="px-6 py-3">Status</th>
-            <th className="px-6 py-3">Actions</th>
+            <th scope="col" className="p-4">
+              <div className="flex items-center">
+                <input
+                  id="checkbox-all"
+                  type="checkbox"
+                  className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary dark:focus:ring-primary dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                />
+                <label htmlFor="checkbox-all" className="sr-only">
+                  checkbox
+                </label>
+              </div>
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Service
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Category
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Price
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Duration
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Status
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -280,34 +211,30 @@ const ServicesTable = ({ services, loading, error }) => {
             </tr>
           ) : error ? (
             <tr>
-              <td colSpan={7} className="px-6 py-10 text-center text-yellow-500">
+              <td colSpan={7} className="px-6 py-10 text-center text-red-500">
                 {error}
               </td>
             </tr>
           ) : services.length === 0 ? (
             <tr>
-              <td colSpan={7} className="px-6 py-10 text-center text-gray-400">
-                No matching services found.
+              <td colSpan={7} className="px-6 py-10 text-center">
+                No services available.
               </td>
             </tr>
           ) : (
             services.map((service) => {
-              const isActive =
-                service.isActive === "Pending"
-                  ? "pending"
-                  : service.isActive
-                  ? "active"
-                  : "inactive";
-              const stateClass =
-                isActive === "pending"
-                  ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
-                  : isActive === "active"
-                  ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
-                  : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300";
               const imageSrc =
                 (Array.isArray(service.images) && service.images[0]) ||
                 service.imageUrl ||
                 null;
+              const categoryName =
+                service._categoryName ||
+                service.categoryName ||
+                service.category ||
+                service.categoryId ||
+                "—";
+              const isActive =
+                service.isActive === undefined ? true : Boolean(service.isActive);
 
               return (
                 <tr
@@ -315,17 +242,26 @@ const ServicesTable = ({ services, loading, error }) => {
                   className="bg-white dark:bg-gray-900/50 hover:bg-gray-50 dark:hover:bg-gray-800/50 border-b dark:border-gray-800"
                 >
                   <td className="w-4 p-4">
-                    <input
-                      type="checkbox"
-                      className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary dark:focus:ring-primary"
-                    />
+                    <div className="flex items-center">
+                      <input
+                        id={`checkbox-${service.id}`}
+                        type="checkbox"
+                        className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary dark:focus:ring-primary dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      />
+                      <label htmlFor={`checkbox-${service.id}`} className="sr-only">
+                        checkbox
+                      </label>
+                    </div>
                   </td>
-                  <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                  <th
+                    scope="row"
+                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                  >
                     <div className="flex items-center gap-4">
                       {imageSrc ? (
                         <img
                           src={imageSrc}
-                          alt={service.name || "Service"}
+                          alt={`${service.name || "Service"} thumbnail`}
                           className="h-12 w-12 rounded-lg object-cover border border-gray-200 dark:border-gray-700"
                         />
                       ) : (
@@ -334,27 +270,27 @@ const ServicesTable = ({ services, loading, error }) => {
                         </div>
                       )}
                       <div>
-                        <p className="font-semibold">{service.name || "Untitled service"}</p>
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                          {service.name || "Untitled service"}
+                        </p>
                         <p className="text-xs text-gray-500 dark:text-gray-400">
                           Created: {formatCreatedAt(service.createdAt)}
                         </p>
                       </div>
                     </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    {service.categoryName || service.category || "—"}
-                  </td>
+                  </th>
+                  <td className="px-6 py-4">{categoryName}</td>
                   <td className="px-6 py-4">{formatPrice(service.price)}</td>
                   <td className="px-6 py-4">{formatDuration(service.duration)}</td>
                   <td className="px-6 py-4">
                     <span
-                      className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${stateClass}`}
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        isActive
+                          ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
+                          : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+                      }`}
                     >
-                      {isActive === "pending"
-                        ? "Pending"
-                        : isActive === "active"
-                        ? "Active"
-                        : "Inactive"}
+                      {isActive ? "Active" : "Inactive"}
                     </span>
                   </td>
                   <td className="px-6 py-4">
@@ -377,25 +313,15 @@ const ServicesTable = ({ services, loading, error }) => {
   );
 };
 
-// ===== Pagination =====
-const Pagination = ({ total, perPage, currentPage, setCurrentPage }) => {
-  const totalPages = Math.ceil(total / perPage) || 1;
-  if (totalPages <= 1) return null;
-
-  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
-
+// Pagination UI left untouched (no data wiring yet)
+const Pagination = () => {
   return (
     <nav className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4">
       <span className="text-sm font-normal text-gray-500 dark:text-gray-400 text-center sm:text-left">
         Showing{" "}
-        <span className="font-semibold text-gray-900 dark:text-white">
-          {(currentPage - 1) * perPage + 1}-
-          {Math.min(currentPage * perPage, total)}
-        </span>{" "}
+        <span className="font-semibold text-gray-900 dark:text-white">1-4</span>{" "}
         of{" "}
-        <span className="font-semibold text-gray-900 dark:text-white">
-          {total}
-        </span>
+        <span className="font-semibold text-gray-900 dark:text-white">100</span>
       </span>
       <ul className="inline-flex items-center -space-x-px">
         <li>
@@ -439,8 +365,10 @@ const Pagination = ({ total, perPage, currentPage, setCurrentPage }) => {
                 : "text-gray-500 bg-white border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
             }`}
           >
-            Next
-          </button>
+            <span className="material-symbols-outlined text-sm sm:text-base">
+              chevron_right
+            </span>
+          </a>
         </li>
       </ul>
     </nav>
