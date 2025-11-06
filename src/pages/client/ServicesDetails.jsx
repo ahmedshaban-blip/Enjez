@@ -4,7 +4,7 @@ import { getDoc, doc } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import Navbar from '../../components/layout/Navbar';
-import { useAuth } from '../../context/AuthContext.jsx';
+import { useAuth } from '../../components/authContext.jsx';
 import { useModal } from '../../context/ModalContext.jsx';
 
 const ServiceDetailsPage = () => {
