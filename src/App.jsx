@@ -33,6 +33,7 @@ import Reports from "./pages/admin/Reports.jsx";
 import Settings from "./pages/admin/Settings.jsx";
 import AddService from "./pages/admin/AddService.jsx";
 import NotFound from './pages/NotFound.jsx';
+import Notifications from './pages/admin/Notifications.jsx';
 
 function App() {
   return (
@@ -65,6 +66,7 @@ function App() {
                   <Route path="reports" element={<Reports />} />
                   <Route path="settings" element={<Settings />} />
                   <Route path="add-service" element={<AddService />} />
+                  <Route path="notifications" element={<Notifications />} />
                 </Route>
               </Route>
 

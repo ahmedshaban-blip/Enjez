@@ -1,8 +1,36 @@
+import { useEffect, useRef, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import AdminSidebar from "../../components/layout/AdminSidebar.jsx";
+import NotificationsDropdown from "../../components/common/admin/NotificationsDropdown.jsx";
 
 export default function AdminLayout() {
   const location = useLocation();
+  const [showNotifications, setShowNotifications] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClick = (event) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target)
+      ) {
+        setShowNotifications(false);
+      }
+    };
+
+    if (showNotifications) {
+      document.addEventListener("mousedown", handleClick);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+    };
+  }, [showNotifications]);
+
+  useEffect(() => {
+    setShowNotifications(false);
+  }, [location.pathname]);
+
   return (
     <div className="min-h-screen bg-slate-50 flex font-sans">
       {/* Sidebar component */}
@@ -28,11 +56,22 @@ export default function AdminLayout() {
               />
             </label>
 
-            <button className="h-10 w-10 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-500">
-              <span className="material-symbols-outlined text-xl">
-                notifications
-              </span>
-            </button>
+            <div className="relative" ref={dropdownRef}>
+              <button
+                type="button"
+                onClick={() =>
+                  setShowNotifications((prev) => !prev)
+                }
+                className="h-10 w-10 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 hover:border-blue-200 transition"
+                aria-haspopup="true"
+                aria-expanded={showNotifications}
+              >
+                <span className="material-symbols-outlined text-xl">
+                  notifications
+                </span>
+              </button>
+              <NotificationsDropdown open={showNotifications} />
+            </div>
 
             <div className="flex items-center gap-3">
               <div
