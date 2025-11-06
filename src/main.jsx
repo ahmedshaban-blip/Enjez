@@ -18,37 +18,43 @@ import Settings from "./pages/admin/Settings.jsx";
 import AddService from "./pages/admin/AddService.jsx";
 import { LoadingProvider } from "./context/LoadingContext.jsx";
 import { ModalProvider } from "./context/ModalContext.jsx";
+import RequestBooking from "./pages/client/Booking.jsx";
+import BookingConfirmation from "./pages/client/Confirmation.jsx";
+import MyBookings from "./pages/client/MyBookings.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <LoadingProvider>
       <ModalProvider>
-    <BrowserRouter>
-      <Routes>
-        {/* redirect root to /home (lowercase to match the route) */}
-        <Route path="/" element={<Navigate to="/home" replace />} />
+        <BrowserRouter>
+          <Routes>
+            {/* redirect root to /home (lowercase to match the route) */}
+            <Route path="/" element={<Navigate to="/home" replace />} />
 
-        {/* client pages */}
-        <Route path="/home" element={<Home />} />
-        <Route path="/services" element={<ClientServices />} />
+            {/* client pages */}
+            <Route path="/home" element={<Home />} />
+            <Route path="/services" element={<ClientServices />} />
+            <Route path="/booking" element={<RequestBooking />} />
+            <Route path="/booking/confirmation" element={<BookingConfirmation />} />
+            <Route path="/mybookings" element={<MyBookings />} />
 
-        {/* login & signup */}
-        <Route path="/login" element={<App />} />
-        <Route path="/signup" element={<Signup />} />
+            {/* login & signup */}
+            <Route path="/login" element={<App />} />
+            <Route path="/signup" element={<Signup />} />
 
-        {/* Admin layout + pages */}
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<AdminDashboard />} />
-          <Route path="bookings" element={<Bookings />} />
-          <Route path="clients" element={<Clients />} />
-          <Route path="services" element={<AdminServices />} />
-          <Route path="reports" element={<Reports />} />
-          <Route path="settings" element={<Settings />} />
-          <Route path="add-service" element={<AddService />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
-    </ModalProvider>
+            {/* Admin layout + pages */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="bookings" element={<Bookings />} />
+              <Route path="clients" element={<Clients />} />
+              <Route path="services" element={<AdminServices />} />
+              <Route path="reports" element={<Reports />} />
+              <Route path="settings" element={<Settings />} />
+              <Route path="add-service" element={<AddService />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </ModalProvider>
     </LoadingProvider>
   </React.StrictMode>
 );
