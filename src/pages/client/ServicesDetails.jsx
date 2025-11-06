@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { getDoc, doc } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import Navbar from '../../components/layout/Navbar';
+import { useAuth } from '../../context/AuthContext.jsx';
+import { useModal } from '../../context/ModalContext.jsx';
 
 const ServiceDetailsPage = () => {
   const { id } = useParams();
@@ -11,10 +13,14 @@ const ServiceDetailsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const { user } = useAuth();
+  const { showModal } = useModal();
+  const navigate = useNavigate();
+
   useEffect(() => {
     async function fetchService() {
       console.log('Current ID from params:', id);
-      
+
       if (!id) {
         console.log('No ID provided');
         setError('No service ID provided');
@@ -26,14 +32,14 @@ const ServiceDetailsPage = () => {
         console.log('Attempting to fetch service from Firestore...');
         const serviceRef = doc(db, 'services', id);
         console.log('Service reference created');
-        
+
         const serviceDoc = await getDoc(serviceRef);
         console.log('Got response from Firestore');
-        
+
         if (serviceDoc.exists()) {
           const serviceData = {
             id: serviceDoc.id,
-            ...serviceDoc.data()
+            ...serviceDoc.data(),
           };
           console.log('Found service data:', serviceData);
           setService(serviceData);
@@ -51,6 +57,24 @@ const ServiceDetailsPage = () => {
 
     fetchService();
   }, [id]);
+
+  const handleBookClick = () => {
+    const serviceId = service?.id;
+    if (!serviceId) return;
+
+    if (!user) {
+      showModal({
+        title: 'Login Required',
+        message: 'You have to log in to book this service.',
+        type: 'error',
+        actionLabel: 'Go to Login',
+        onAction: () => navigate('/login'),
+      });
+      return;
+    }
+
+    navigate(`/booking/${serviceId}`);
+  };
 
   if (loading) {
     return (
@@ -100,11 +124,11 @@ const ServiceDetailsPage = () => {
             {/* Hero Section */}
             <div
               className="relative bg-cover bg-center flex flex-col justify-end overflow-hidden rounded-xl min-h-80"
-              alt={service?.name}
               style={{
-                backgroundImage: service?.images && service.images.length > 0
-                  ? `linear-gradient(0deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 40%), url("${service.images[0]}")`
-                  : 'linear-gradient(0deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 40%), url("https://images.pexels.com/photos/37347/repair-cell-phone-repairing-fix.jpg")',
+                backgroundImage:
+                  service?.images && service.images.length > 0
+                    ? `linear-gradient(0deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 40%), url("${service.images[0]}")`
+                    : 'linear-gradient(0deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 40%), url("https://images.pexels.com/photos/37347/repair-cell-phone-repairing-fix.jpg")',
               }}
             >
               <div className="flex flex-col p-6 md:p-8 text-white">
@@ -125,7 +149,9 @@ const ServiceDetailsPage = () => {
                     Service Overview
                   </h2>
                   <p className="mt-4 text-base leading-relaxed text-gray-600 dark:text-gray-300">
-                    {service?.longDescription || service?.description || 'No description available'}
+                    {service?.longDescription ||
+                      service?.description ||
+                      'No description available'}
                   </p>
                 </div>
                 {/* Tabbed Content */}
@@ -142,9 +168,7 @@ const ServiceDetailsPage = () => {
                     </button>
                   </div>
                   <div className="pt-6 text-base text-gray-600 dark:text-gray-300">
-                    <p>
-                      {service?.details || 'Service details will be listed here.'}
-                    </p>
+                    <p>{service?.details || 'Service details will be listed here.'}</p>
                   </div>
                 </div>
                 {/* Gallery Section */}
@@ -206,12 +230,13 @@ const ServiceDetailsPage = () => {
                       <p className="text-4xl font-bold text-text-light dark:text-text-dark tracking-tight mt-1">
                         {service?.price ? `${service.price} EGP` : 'Price on request'}
                       </p>
-                      <Link 
-                        to={`/booking/${service?.id}`}
+                      <button
+                        type="button"
+                        onClick={handleBookClick}
                         className="w-full mt-6 flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-blue-600 text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-blue-700 transition-colors"
                       >
                         <span className="truncate">Book This Service</span>
-                      </Link>
+                      </button>
                     </div>
                     <div className="border-t border-border-light dark:border-border-dark p-6 space-y-4">
                       <h3 className="text-base font-semibold">Key Features</h3>
