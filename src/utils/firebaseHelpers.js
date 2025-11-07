@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs, getDoc, doc, Timestamp } from "firebase/firestore";
+import { collection, addDoc, getDocs, getDoc, doc, Timestamp, query, where } from "firebase/firestore";
 import { db } from "../config/firebase.js";
 
 // ===== Default structures =====
@@ -68,6 +68,22 @@ export const getDocById = async (collectionName, id) => {
     return null;
   }
 };
+
+// Get by field
+export async function getDocsByField(collectionName, field, value) {
+  try {
+    const q = query(collection(db, collectionName), where(field, "==", value));
+    const querySnapshot = await getDocs(q);
+    const docs = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    return docs;
+  } catch (error) {
+    console.error("Error fetching filtered documents:", error);
+    throw error;
+  }
+}
 
 // ========== Specific create functions ==========
 export const createUser = (data) => createDoc("users", data);

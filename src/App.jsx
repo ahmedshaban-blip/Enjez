@@ -2,11 +2,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
-// Context Providers
-import { AuthProvider } from "./components/authContext.jsx";
-import { LoadingProvider } from "./context/LoadingContext.jsx";
-import { ModalProvider } from "./context/ModalContext.jsx";
-
 // Protected Routes
 import AdminRoute from "./components/AdminRoute.jsx";
 import ProtectedRoute from "./components/layout/ProtectedRoute.jsx";
@@ -22,6 +17,7 @@ import ServicesDetails from "./pages/client/ServicesDetails.jsx";
 import RequestBooking from "./pages/client/Booking.jsx";
 import BookingConfirmation from "./pages/client/Confirmation.jsx";
 import MyBookings from "./pages/client/MyBookings.jsx";
+import BookingDetails from "./pages/client/BookingDetails.jsx";
 
 // Admin Pages
 import AdminLayout from "./pages/admin/AdminLayout.jsx";
@@ -37,9 +33,6 @@ import Notifications from './pages/admin/Notifications.jsx';
 
 function App() {
   return (
-    <AuthProvider>
-      <LoadingProvider>
-        <ModalProvider>
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Navigate to="/home" replace />} />
@@ -55,6 +48,7 @@ function App() {
                 <Route path="/booking/:id" element={<RequestBooking />} />
                 <Route path="/booking/confirmation/:id" element={<BookingConfirmation />} />
                 <Route path="/mybookings/:id" element={<MyBookings />} />
+                <Route path="/booking/details/:id" element={<BookingDetails />} />
               </Route>
 
               <Route element={<AdminRoute />}>
@@ -73,9 +67,6 @@ function App() {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
-        </ModalProvider>
-      </LoadingProvider>
-    </AuthProvider>
   );
 }
 

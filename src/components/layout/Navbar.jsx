@@ -1,7 +1,7 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import logo from "../../assets/logo2.svg";
 
-import { useAuth } from "../authContext.jsx";
+import { useAuth } from "../../context/AuthContext.jsx";
 import { getAuth, signOut } from "firebase/auth";
 
 export default function Navbar() {
@@ -78,6 +78,16 @@ export default function Navbar() {
             }
           >
             About
+          </NavLink>
+
+          <NavLink
+            to="/mybookings/:id"
+            className={({ isActive }) =>
+              `hover:text-blue-600 ${isActive ? "text-blue-600 font-semibold" : ""
+              }`
+            }
+          >
+            My Bookings
           </NavLink>
 
           <NavLink

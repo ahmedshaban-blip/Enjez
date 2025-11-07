@@ -3,7 +3,7 @@ import Navbar from "../../components/layout/Navbar";
 import { Timestamp } from "firebase/firestore";
 import { useNavigate, useParams } from "react-router-dom";
 import { getAllDocs, createBooking } from "../../utils/firebaseHelpers.js";
-import { useAuth } from "../../components/authContext.jsx";
+import { useAuth } from "../../context/AuthContext.jsx";
 import { useLoading } from "../../context/LoadingContext.jsx";
 import { useModal } from "../../context/ModalContext.jsx";
 
