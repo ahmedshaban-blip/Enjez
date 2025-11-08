@@ -51,14 +51,14 @@ export const AuthProvider = ({ children }) => {
       }
 
       setAuthLoading(false);
-      hideLoading(); // ✅ يخفي شاشة التحميل
+      hideLoading();
     });
 
     return () => unsubscribe();
   }, []);
 
   if (authLoading) {
-    return null; //
+    return null; 
   }
 
   return (
