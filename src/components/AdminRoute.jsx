@@ -1,6 +1,6 @@
 // components/AdminRoute.jsx
 import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from '../components/authContext.jsx';
+import { useAuth } from '../context/AuthContext.jsx';
 
 const AdminRoute = () => {
   const { user, loading } = useAuth();
