@@ -1,12 +1,33 @@
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import logo from "../../assets/logo2.svg";
-
 import { useAuth } from "../../context/AuthContext.jsx";
 import { getAuth, signOut } from "firebase/auth";
+import ClientNotificationsDropdown from "../common/client/NotificationsDropdown.jsx";
 
 export default function Navbar() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [showNotifications, setShowNotifications] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    if (!showNotifications) return undefined;
+
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowNotifications(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showNotifications]);
+
+  useEffect(() => {
+    setShowNotifications(false);
+  }, [location.pathname]);
 
   const handleLogout = async () => {
     try {
@@ -125,6 +146,26 @@ export default function Navbar() {
               <span className="hidden sm:inline text-sm text-slate-700">
                 Welcome, <span className="font-semibold">{username}</span>
               </span>
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  type="button"
+                  onClick={() => setShowNotifications((prev) => !prev)}
+                  className={`h-10 w-10 rounded-full border flex items-center justify-center transition ${
+                    showNotifications
+                      ? "border-blue-200 text-blue-600 bg-blue-50"
+                      : "border-slate-300 text-slate-500 hover:text-blue-600 hover:border-blue-300"
+                  }`}
+                  aria-haspopup="true"
+                  aria-expanded={showNotifications}
+                  aria-label="Toggle notifications"
+                >
+                  <span className="material-symbols-outlined text-xl">notifications</span>
+                </button>
+                <ClientNotificationsDropdown
+                  open={showNotifications}
+                  onNavigate={() => setShowNotifications(false)}
+                />
+              </div>
               <button
                 onClick={handleLogout}
                 className="h-10 px-5 rounded-full border border-slate-300 text-sm font-medium text-slate-700 flex items-center justify-center hover:bg-slate-100 transition-colors"

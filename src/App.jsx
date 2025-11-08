@@ -18,6 +18,7 @@ import RequestBooking from "./pages/client/Booking.jsx";
 import BookingConfirmation from "./pages/client/Confirmation.jsx";
 import MyBookings from "./pages/client/MyBookings.jsx";
 import BookingDetails from "./pages/client/BookingDetails.jsx";
+import ClientNotifications from "./pages/client/Notifications.jsx";
 
 // Admin Pages
 import AdminLayout from "./pages/admin/AdminLayout.jsx";
@@ -29,7 +30,7 @@ import Reports from "./pages/admin/Reports.jsx";
 import Settings from "./pages/admin/Settings.jsx";
 import AddService from "./pages/admin/AddService.jsx";
 import NotFound from './pages/NotFound.jsx';
-import Notifications from './pages/admin/Notifications.jsx';
+import AdminNotifications from './pages/admin/Notifications.jsx';
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
                 <Route path="/booking/confirmation/:id" element={<BookingConfirmation />} />
                 <Route path="/mybookings/:id" element={<MyBookings />} />
                 <Route path="/booking/details/:id" element={<BookingDetails />} />
+                <Route path="/notifications" element={<ClientNotifications />} />
               </Route>
 
               <Route element={<AdminRoute />}>
@@ -60,7 +62,7 @@ function App() {
                   <Route path="reports" element={<Reports />} />
                   <Route path="settings" element={<Settings />} />
                   <Route path="add-service" element={<AddService />} />
-                  <Route path="notifications" element={<Notifications />} />
+                  <Route path="notifications" element={<AdminNotifications />} />
                 </Route>
               </Route>
 
