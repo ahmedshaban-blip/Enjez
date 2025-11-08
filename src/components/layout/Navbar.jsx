@@ -1,6 +1,7 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import logo from "../../assets/logo.png";
-import { useAuth } from "../../context/AuthContext.jsx";
+import logo from "../../assets/logo2.svg";
+
+import { useAuth } from "../authContext.jsx";
 import { getAuth, signOut } from "firebase/auth";
 
 export default function Navbar() {
@@ -17,7 +18,6 @@ export default function Navbar() {
     }
   };
 
-  // نجيب اسم لطيف نعرضه
   const username =
     user?.displayName ||
     (user?.email ? user.email.split("@")[0] : "User");
@@ -27,8 +27,15 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto h-16 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Logo */}
         <Link to="/home" className="flex items-center gap-2">
-          <img src={logo} alt="Enjez logo" className="h-9 w-9 object-contain" />
-          <span className="text-xl font-bold text-slate-900">Enjez</span>
+          <img
+            src={logo}
+            alt="Enjez logo"
+            className="h-16 w-16 object-contain cursor-pointer transition-all duration-300 hover:scale-110"
+            loading="lazy"
+          />
+
+          {/* 
+          <span className="text-xl font-bold text-slate-900">Enjez</span> */}
         </Link>
 
         {/* Links */}
@@ -36,8 +43,7 @@ export default function Navbar() {
           <NavLink
             to="/home"
             className={({ isActive }) =>
-              `hover:text-blue-600 ${
-                isActive ? "text-blue-600 font-semibold" : ""
+              `hover:text-blue-600 ${isActive ? "text-blue-600 font-semibold" : ""
               }`
             }
           >
@@ -47,8 +53,7 @@ export default function Navbar() {
           <NavLink
             to="/services"
             className={({ isActive }) =>
-              `hover:text-blue-600 ${
-                isActive ? "text-blue-600 font-semibold" : ""
+              `hover:text-blue-600 ${isActive ? "text-blue-600 font-semibold" : ""
               }`
             }
           >
@@ -58,8 +63,7 @@ export default function Navbar() {
           <NavLink
             to="/how-it-works"
             className={({ isActive }) =>
-              `hover:text-blue-600 ${
-                isActive ? "text-blue-600 font-semibold" : ""
+              `hover:text-blue-600 ${isActive ? "text-blue-600 font-semibold" : ""
               }`
             }
           >
@@ -69,8 +73,7 @@ export default function Navbar() {
           <NavLink
             to="/about"
             className={({ isActive }) =>
-              `hover:text-blue-600 ${
-                isActive ? "text-blue-600 font-semibold" : ""
+              `hover:text-blue-600 ${isActive ? "text-blue-600 font-semibold" : ""
               }`
             }
           >
@@ -80,8 +83,7 @@ export default function Navbar() {
           <NavLink
             to="/contact"
             className={({ isActive }) =>
-              `hover:text-blue-600 ${
-                isActive ? "text-blue-600 font-semibold" : ""
+              `hover:text-blue-600 ${isActive ? "text-blue-600 font-semibold" : ""
               }`
             }
           >
@@ -89,11 +91,9 @@ export default function Navbar() {
           </NavLink>
         </nav>
 
-        {/* Auth buttons / welcome + logout */}
         <div className="flex items-center gap-3">
           {!user && (
             <>
-              {/* Log in: حدود زرقاء ونص أزرق */}
               <Link
                 to="/login"
                 className="h-10 px-5 rounded-full border border-blue-600 text-blue-600 text-sm font-medium flex items-center justify-center hover:bg-blue-50 transition-colors"
@@ -101,7 +101,6 @@ export default function Navbar() {
                 Log In
               </Link>
 
-              {/* Sign up: خلفية زرقاء ونص أبيض */}
               <Link
                 to="/signup"
                 className="h-10 px-5 rounded-full bg-blue-600 text-white text-sm font-medium flex items-center justify-center hover:bg-blue-700 transition-colors"
