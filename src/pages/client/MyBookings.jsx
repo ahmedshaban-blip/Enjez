@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { getDocsByField, getAllDocs } from "../../utils/firebaseHelpers.js";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { useLoading } from "../../context/LoadingContext.jsx";
+import Navbar from "../../components/layout/Navbar.jsx";
 
 export default function MyBookings() {
   const { user } = useAuth();
@@ -78,9 +79,10 @@ export default function MyBookings() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-16">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+      <Navbar />
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-6 pt-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Booking Requests</h1>
           <p className="text-gray-500 dark:text-gray-400">View and manage all your past and upcoming service bookings.</p>
