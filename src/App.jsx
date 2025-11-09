@@ -30,43 +30,49 @@ import Settings from "./pages/admin/Settings.jsx";
 import AddService from "./pages/admin/AddService.jsx";
 import NotFound from './pages/NotFound.jsx';
 import Notifications from './pages/admin/Notifications.jsx';
+import ResetPassword from './pages/auth/ResetPassword.jsx';
 
 function App() {
   return (
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Navigate to="/home" replace />} />
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Navigate to="/home" replace />} />
 
-              <Route path="/home" element={<Home />} />
-              <Route path="/services" element={<ClientServices />} />
-              <Route path="/services/:id" element={<ServicesDetails />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/services" element={<ClientServices />} />
+        <Route path="/services/:id" element={<ServicesDetails />} />
 
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/forgot-password" element={<ResetPassword />} />
+        
+        // Protected Routes for authenticated users
 
-              <Route element={<ProtectedRoute />}>
-                <Route path="/booking/:id" element={<RequestBooking />} />
-                <Route path="/booking/confirmation/:id" element={<BookingConfirmation />} />
-                <Route path="/mybookings/:id" element={<MyBookings />} />
-                <Route path="/booking/details/:id" element={<BookingDetails />} />
-              </Route>
+        <Route element={<ProtectedRoute />}>
+          <Route path="/booking/:id" element={<RequestBooking />} />
+          <Route path="/booking/confirmation/:id" element={<BookingConfirmation />} />
+          <Route path="/mybookings/:id" element={<MyBookings />} />
+          <Route path="/booking/details/:id" element={<BookingDetails />} />
+        </Route>
+        
+        // Protected Routes for admin users
 
-              <Route element={<AdminRoute />}>
-                <Route path="/admin" element={<AdminLayout />}>
-                  <Route index element={<AdminDashboard />} />
-                  <Route path="bookings" element={<Bookings />} />
-                  <Route path="clients" element={<Clients />} />
-                  <Route path="services" element={<AdminServices />} />
-                  <Route path="reports" element={<Reports />} />
-                  <Route path="settings" element={<Settings />} />
-                  <Route path="add-service" element={<AddService />} />
-                  <Route path="notifications" element={<Notifications />} />
-                </Route>
-              </Route>
+        <Route element={<AdminRoute />}>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="bookings" element={<Bookings />} />
+            <Route path="clients" element={<Clients />} />
+            <Route path="services" element={<AdminServices />} />
+            <Route path="reports" element={<Reports />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="add-service" element={<AddService />} />
+            <Route path="notifications" element={<Notifications />} />
+          </Route>
+        </Route>
 
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
