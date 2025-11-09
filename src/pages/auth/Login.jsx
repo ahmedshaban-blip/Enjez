@@ -75,9 +75,9 @@ export default function Login() {
               autoComplete="current-password"
             />
             <div className="flex justify-end">
-              <a href="#" className="text-sm text-neutral-600 transition hover:text-neutral-800">
+              <Link to="/forgot-password" className="text-sm text-neutral-600 transition hover:text-neutral-800">
                 Forgot password?
-              </a>
+              </Link>
             </div>
           </div>
           <Button type="submit" full>

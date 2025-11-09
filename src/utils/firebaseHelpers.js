@@ -1,3 +1,4 @@
+// src/utils/firebaseHelpers.js
 import { collection, addDoc, getDocs, getDoc, doc, Timestamp, query, where } from "firebase/firestore";
 import { db } from "../config/firebase.js";
 
