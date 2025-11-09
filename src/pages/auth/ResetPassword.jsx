@@ -9,6 +9,14 @@ import { auth } from "../../config/firebase.js";
 
 export default function App() {
 
+const [email, setEmail] = useState("");
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e) => {
+ 
+  };
+
 
   return (
     <div className="relative flex min-h-screen w-full flex-col items-center justify-center p-4">
