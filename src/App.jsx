@@ -31,6 +31,7 @@ import Settings from "./pages/admin/Settings.jsx";
 import AddService from "./pages/admin/AddService.jsx";
 import NotFound from './pages/NotFound.jsx';
 import AdminNotifications from './pages/admin/Notifications.jsx';
+import ViewDetails from './pages/admin/ViewDetails.jsx';
 
 function App() {
   return (
@@ -57,6 +58,7 @@ function App() {
                 <Route path="/admin" element={<AdminLayout />}>
                   <Route index element={<AdminDashboard />} />
                   <Route path="bookings" element={<Bookings />} />
+                  <Route path="booking/view-details/:id" element={<ViewDetails />} />
                   <Route path="clients" element={<Clients />} />
                   <Route path="services" element={<AdminServices />} />
                   <Route path="reports" element={<Reports />} />
