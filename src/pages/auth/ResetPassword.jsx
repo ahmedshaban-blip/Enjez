@@ -9,12 +9,29 @@ import { auth } from "../../config/firebase.js";
 
 export default function App() {
 
-const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
- 
+    e.preventDefault();
+    setError("");
+    setIsSubmitted(false);
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setIsSubmitted(true);
+    } catch (err) {
+      console.error("Error sending password reset email:", err);
+
+      if (err.code === "auth/user-not-found") {
+        setIsSubmitted(true);
+      } else if (err.code === "auth/invalid-email") {
+        setError("Please enter a valid email address.");
+      } else {
+        setError("Failed to send reset email. Please try again.");
+      }
+    }
   };
 
 
