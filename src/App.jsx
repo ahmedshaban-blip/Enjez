@@ -33,6 +33,7 @@ import NotFound from './pages/NotFound.jsx';
 import Notifications from './pages/admin/Notifications.jsx';
 import ResetPassword from './pages/auth/ResetPassword.jsx';
 import ViewDetails from './pages/admin/ViewDetails.jsx';
+import ContactUs from './pages/client/Contact.jsx';
 
 function App() {
   return (
@@ -56,6 +57,7 @@ function App() {
           <Route path="/mybookings/:id" element={<MyBookings />} />
           <Route path="/booking/details/:id" element={<BookingDetails />} />
           <Route path="/notifications" element={<ClientNotifications />} />
+          <Route path="/contact" element={<ContactUs />} />
         </Route>
 
         <Route element={<AdminRoute />}>

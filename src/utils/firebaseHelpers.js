@@ -92,3 +92,4 @@ export const createService = (data) => createDoc("services", data);
 export const createBooking = (data) => createDoc("bookings", data);
 export const createAgent = (data) => createDoc("agents", data);
 export const createCategory = (data) => createDoc("categories", data);
+export const createMessage = (data) => createDoc("messages", data);
