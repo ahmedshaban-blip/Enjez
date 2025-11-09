@@ -1,8 +1,71 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { getDocById } from '../../utils/firebaseHelpers.js';
 
 const ViewDetails = () => {
   const { id } = useParams();
+  const [booking, setBooking] = useState(null);
+  const [service, setService] = useState(null);
+  const [agent, setAgent] = useState(null);
+  const [user, setUser] = useState(null);
+
+  const formatDate = (value) => {
+    try {
+      if (!value) return '—';
+      const d = value.toDate ? value.toDate() : new Date(value);
+      return d.toLocaleString(undefined, { month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+    } catch (e) {
+      return String(value);
+    }
+  };
+
+  const statusLabel = (s) => {
+    const st = (s || '').toLowerCase();
+    if (st === 'confirmed') return 'Confirmed';
+    if (st === 'completed') return 'Completed';
+    if (st === 'cancelled' || st === 'canceled') return 'Cancelled';
+    if (st === 'in progress' || st === 'in_progress') return 'In Progress';
+    return 'New';
+  };
+
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      if (!id) return;
+      try {
+        // Load booking first
+        const b = await getDocById('bookings', id);
+        if (!mounted || !b) return;
+        
+        // Load all related documents in parallel
+        const [serviceDoc, agentDoc, userDoc] = await Promise.all([
+          b.serviceId ? getDocById('services', b.serviceId) : null,
+          b.agentId ? getDocById('agents', b.agentId) : null,
+          b.userId ? getDocById('users', b.userId) : null
+        ]);
+
+        if (!mounted) return;
+
+        // Set booking with enriched data
+        setBooking({
+          ...b,
+          serviceName: serviceDoc?.name || '—',
+          username: userDoc?.username || '—',
+          agentName: agentDoc?.name || '—'
+        });
+        
+        // Keep full documents in state for additional details
+        if (serviceDoc) setService(serviceDoc);
+        if (agentDoc) setAgent(agentDoc);
+        if (userDoc) setUser(userDoc);
+
+      } catch (error) {
+        console.error('Error loading booking details:', error);
+      }
+    };
+    load();
+    return () => { mounted = false; };
+  }, [id]);
   return (
     <main className="flex-1 p-4 sm:p-6 md:p-8">
       <div className="max-w-7xl mx-auto">
@@ -45,36 +108,20 @@ const ViewDetails = () => {
               </h2>
               <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex flex-col gap-1">
-                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Client Name
-                  </p>
-                  <p className="text-base font-medium text-gray-800 dark:text-gray-200">
-                    Eleanor Vance
-                  </p>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Client Name</p>
+                  <p className="text-base font-medium text-gray-800 dark:text-gray-200">{user?.username || '—'}</p>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Email Address
-                  </p>
-                  <p className="text-base font-medium text-gray-800 dark:text-gray-200">
-                    eleanor@example.com
-                  </p>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Email Address</p>
+                  <p className="text-base font-medium text-gray-800 dark:text-gray-200">{user?.email || booking?.email || '—'}</p>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Phone Number
-                  </p>
-                  <p className="text-base font-medium text-gray-800 dark:text-gray-200">
-                    (555) 123-4567
-                  </p>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Phone Number</p>
+                  <p className="text-base font-medium text-gray-800 dark:text-gray-200">{booking?.phone || user?.phone || '—'}</p>
                 </div>
                 <div className="flex flex-col gap-1 md:col-span-2">
-                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Client Notes
-                  </p>
-                  <p className="text-base font-medium text-gray-800 dark:text-gray-200">
-                    Please be aware of a friendly cat in the house. No allergies, just a heads up!
-                  </p>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Client Notes</p>
+                  <p className="text-base font-medium text-gray-800 dark:text-gray-200">{booking?.notes || '—'}</p>
                 </div>
               </div>
             </div>
@@ -86,44 +133,24 @@ const ViewDetails = () => {
               </h2>
               <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex flex-col gap-1">
-                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Service Name
-                  </p>
-                  <p className="text-base font-medium text-gray-800 dark:text-gray-200">
-                    Deep Cleaning Service
-                  </p>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Service Name</p>
+                  <p className="text-base font-medium text-gray-800 dark:text-gray-200">{service?.name || booking?.serviceName || booking?.serviceId || '—'}</p>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Assigned Staff
-                  </p>
-                  <p className="text-base font-medium text-gray-800 dark:text-gray-200">
-                    Marcus Holloway
-                  </p>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Assigned Staff</p>
+                  <p className="text-base font-medium text-gray-800 dark:text-gray-200">{agent?.name || booking?.agentName || booking?.agentId || '—'}</p>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Date & Time
-                  </p>
-                  <p className="text-base font-medium text-gray-800 dark:text-gray-200">
-                    October 26, 2023 at 10:00 AM
-                  </p>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Date & Time</p>
+                  <p className="text-base font-medium text-gray-800 dark:text-gray-200">{booking?.date ? `${booking.date}${booking.time ? ` at ${booking.time}` : ''}` : booking?.requestedAt ? formatDate(booking.requestedAt) : '—'}</p>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Duration
-                  </p>
-                  <p className="text-base font-medium text-gray-800 dark:text-gray-200">
-                    3 hours
-                  </p>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Duration</p>
+                  <p className="text-base font-medium text-gray-800 dark:text-gray-200">{service?.duration || booking?.duration || '—'}</p>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Price
-                  </p>
-                  <p className="text-base font-medium text-gray-800 dark:text-gray-200">
-                    $150.00
-                  </p>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Price</p>
+                  <p className="text-base font-medium text-gray-800 dark:text-gray-200">{service?.price ? `$${service.price}` : (booking?.price ? `$${booking.price}` : '—')}</p>
                 </div>
               </div>
             </div>
@@ -147,11 +174,13 @@ const ViewDetails = () => {
                   <select
                     className="w-full rounded-lg border border-gray-300 dark:border-gray-700 p-2  dark:bg-gray-800 dark:text-white focus:border-blue-600 focus:ring-primary"
                     id="status-select"
+                    value={booking?.status || ''}
+                    onChange={() => {}}
                   >
-                    <option>New</option>
-                    <option>Confirmed</option>
-                    <option>Completed</option>
-                    <option>Cancelled</option>
+                    <option value="new">New</option>
+                    <option value="confirmed">Confirmed</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
                   </select>
                 </div>
                 <button className="w-full bg-primary text-white bg-blue-600 font-semibold py-2.5 px-4 rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary dark:focus:ring-offset-background-dark">

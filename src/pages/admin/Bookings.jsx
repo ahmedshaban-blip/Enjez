@@ -1,12 +1,126 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getAllDocs } from '../../utils/firebaseHelpers.js';
 
 const BookingContent = () => {
   const navigate = useNavigate();
-  
+  const [bookings, setBookings] = useState([]);
+  const [filteredBookings, setFilteredBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [requestedDate, setRequestedDate] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState('all');
+
   const handleViewDetails = (bookingId) => {
     navigate(`/admin/booking/view-details/${bookingId}`);
   };
+
+  const formatDate = (value) => {
+    try {
+      if (!value) return '—';
+      // Firestore Timestamp -> toDate()
+      const d = value.toDate ? value.toDate() : new Date(value);
+      return d.toLocaleString(undefined, { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+    } catch (e) {
+      return String(value);
+    }
+  };
+
+  const getStatusBadge = (status) => {
+    const s = (status || '').toLowerCase();
+    if (s === 'confirmed')
+      return (<span className="inline-flex items-center rounded-full bg-green-100 dark:bg-green-900/50 px-2.5 py-0.5 text-xs font-semibold text-green-800 dark:text-green-300">Confirmed</span>);
+    if (s === 'in progress' || s === 'in_progress')
+      return (<span className="inline-flex items-center rounded-full bg-yellow-100 dark:bg-yellow-900/50 px-2.5 py-0.5 text-xs font-semibold text-yellow-800 dark:text-yellow-300">In Progress</span>);
+    if (s === 'completed')
+      return (<span className="inline-flex items-center rounded-full bg-gray-100 dark:bg-gray-700 px-2.5 py-0.5 text-xs font-semibold text-gray-800 dark:text-gray-300">Completed</span>);
+    if (s === 'cancelled' || s === 'canceled')
+      return (<span className="inline-flex items-center rounded-full bg-red-100 dark:bg-red-900/50 px-2.5 py-0.5 text-xs font-semibold text-red-800 dark:text-red-300">Cancelled</span>);
+    return (<span className="inline-flex items-center rounded-full bg-blue-100 dark:bg-blue-900/50 px-2.5 py-0.5 text-xs font-semibold text-blue-800 dark:text-blue-300">New</span>);
+  };
+
+  // Filter bookings based on search and filters
+  const filterBookings = () => {
+    let result = [...bookings];
+
+    // Search by service name only
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(booking => 
+        booking.serviceName?.toLowerCase().includes(query)
+      );
+    }
+
+    // Filter by requested date (single date filter)
+    if (requestedDate) {
+      result = result.filter(booking => {
+        if (!booking.date) return false;
+        const bookingDate = new Date(booking.date);
+        return bookingDate.toDateString() === requestedDate.toDateString();
+      });
+    }
+
+    // Filter by status
+    if (selectedStatus !== 'all') {
+      result = result.filter(booking => 
+        booking.status?.toLowerCase() === selectedStatus.toLowerCase()
+      );
+    }
+
+    return result;
+  };
+
+  // Effect to handle search and filters
+  useEffect(() => {
+    setFilteredBookings(filterBookings());
+  }, [
+    searchQuery, 
+    selectedStatus, 
+    requestedDate
+  ]);
+
+  // Effect to load initial data
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      try {
+        setLoading(true);
+        const bookingDocs = await getAllDocs('bookings');
+        
+        // Fetch all services and users first to avoid multiple requests
+        const [services, users] = await Promise.all([
+          getAllDocs('services'),
+          getAllDocs('users')
+        ]);
+
+        // Create lookup maps for faster access
+        const serviceMap = new Map(services.map(s => [s.id, s]));
+        const userMap = new Map(users.map(u => [u.id, u]));
+
+        // Enrich bookings with service and user names
+        const enrichedBookings = bookingDocs.map(booking => {
+          const service = booking.serviceId ? serviceMap.get(booking.serviceId) : null;
+          const user = booking.userId ? userMap.get(booking.userId) : null;
+
+          return {
+            ...booking,
+            serviceName: service?.name || '—',
+            username: user?.username || '—',
+          };
+        });
+
+        if (!mounted) return;
+        setBookings(enrichedBookings || []);
+        setFilteredBookings(enrichedBookings || []);
+      } catch (error) {
+        console.error('Error loading bookings:', error);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+    load();
+    return () => { mounted = false; };
+  }, []);
   
   return (
     <div className="relative flex min-h-screen w-full flex-col">
@@ -43,45 +157,33 @@ const BookingContent = () => {
                     </div>
                     <input
                       className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-gray-100 focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700 h-full placeholder:text-gray-500 dark:placeholder:text-gray-400 px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
-                      placeholder="Search by client name or booking ID"
-                      defaultValue="" 
+                      placeholder="Search by service name"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
                     />
                   </div>
                 </label>
               </div>
-              {/* Chips */}
-              <div className="flex gap-3">
-                <button className="flex h-12 shrink-0 items-center justify-center gap-x-2 rounded-lg border border-gray-200 bg-white px-4 dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <span className="material-symbols-outlined text-gray-600 dark:text-gray-300">
-                    calendar_today
-                  </span>
-                  <p className="text-gray-800 dark:text-gray-200 text-sm font-medium">
-                    Date Range
-                  </p>
-                  <span className="material-symbols-outlined text-gray-600 dark:text-gray-300">
-                    expand_more
-                  </span>
-                </button>
-                <button className="flex h-12 shrink-0 items-center justify-center gap-x-2 rounded-lg border border-gray-200 bg-white px-4 dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <span className="material-symbols-outlined text-gray-600 dark:text-gray-300">
-                    sell
-                  </span>
-                  <p className="text-gray-800 dark:text-gray-200 text-sm font-medium">Status</p>
-                  <span className="material-symbols-outlined text-gray-600 dark:text-gray-300">
-                    expand_more
-                  </span>
-                </button>
-                <button className="flex h-12 shrink-0 items-center justify-center gap-x-2 rounded-lg border border-gray-200 bg-white px-4 dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <span className="material-symbols-outlined text-gray-600 dark:text-gray-300">
-                    cases
-                  </span>
-                  <p className="text-gray-800 dark:text-gray-200 text-sm font-medium">
-                    Service Type
-                  </p>
-                  <span className="material-symbols-outlined text-gray-600 dark:text-gray-300">
-                    expand_more
-                  </span>
-                </button>
+              {/* Filters */}
+              <div className="flex items-center gap-3 ml-4">
+                <input
+                  type="date"
+                  className="h-12 px-4 rounded-lg border border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700"
+                  onChange={(e) => setRequestedDate(e.target.value ? new Date(e.target.value) : null)}
+                  placeholder="Request Date"
+                />
+                <select
+                  className="h-12 px-4 rounded-lg border border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700"
+                  value={selectedStatus}
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                >
+                  <option value="all">All Statuses</option>
+                  <option value="new">New</option>
+                  <option value="confirmed">Confirmed</option>
+                  <option value="in_progress">In Progress</option>
+                  <option value="completed">Completed</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
               </div>
             </div>
 
@@ -118,173 +220,56 @@ const BookingContent = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                    <tr className="hover:bg-gray-50 dark:hover:bg-gray-900/50 font-bold text-gray-900 dark:text-gray-50">
-                      <td className="p-4 w-12 text-center">
-                        <input
-                          className="h-5 w-5 rounded border-gray-300 dark:border-gray-600 bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-2 focus:ring-offset-0 focus:ring-primary/50 dark:focus:ring-offset-gray-800"
-                          type="checkbox"
-                        />
-                      </td>
-                      <td className="p-4 text-sm whitespace-nowrap">
-                        <div className="flex items-center gap-2">
-                          <div className="h-2 w-2 rounded-full bg-primary"></div>Jane Doe
-                        </div>
-                      </td>
-                      <td className="p-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap font-normal">
-                        Initial Consultation
-                      </td>
-                      <td className="p-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap font-normal">
-                        Oct 28, 2023, 10:00 AM
-                      </td>
-                      <td className="p-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap font-normal">
-                        Oct 26, 2023
-                      </td>
-                      <td className="p-4 text-sm whitespace-nowrap">
-                        <span className="inline-flex items-center rounded-full bg-blue-100 dark:bg-blue-900/50 px-2.5 py-0.5 text-xs font-semibold text-blue-800 dark:text-blue-300">
-                          New
-                        </span>
-                      </td>
-                      <td className="p-4 text-sm whitespace-nowrap text-right">
-                        <button 
-                          onClick={() => handleViewDetails('1')}
-                          className="text-primary hover:underline font-semibold"
-                        >
-                          View Details
-                        </button>
-                      </td>
-                    </tr>
-                    <tr className="hover:bg-gray-50 dark:hover:bg-gray-900/50">
-                      <td className="p-4 w-12 text-center">
-                        <input
-                          className="h-5 w-5 rounded border-gray-300 dark:border-gray-600 bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-2 focus:ring-offset-0 focus:ring-primary/50 dark:focus:ring-offset-gray-800"
-                          type="checkbox"
-                        />
-                      </td>
-                      <td className="p-4 text-sm text-gray-900 dark:text-gray-100 whitespace-nowrap">
-                        John Smith
-                      </td>
-                      <td className="p-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                        Full Day Package
-                      </td>
-                      <td className="p-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                        Nov 5, 2023, 09:00 AM
-                      </td>
-                      <td className="p-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                        Oct 25, 2023
-                      </td>
-                      <td className="p-4 text-sm whitespace-nowrap">
-                        <span className="inline-flex items-center rounded-full bg-green-100 dark:bg-green-900/50 px-2.5 py-0.5 text-xs font-semibold text-green-800 dark:text-green-300">
-                          Confirmed
-                        </span>
-                      </td>
-                      <td className="p-4 text-sm whitespace-nowrap text-right">
-                        <button 
-                          onClick={() => handleViewDetails('2')}
-                          className="text-primary hover:underline font-semibold"
-                        >
-                          View Details
-                        </button>
-                      </td>
-                    </tr>
-                    <tr className="hover:bg-gray-50 dark:hover:bg-gray-900/50">
-                      <td className="p-4 w-12 text-center">
-                        <input
-                          className="h-5 w-5 rounded border-gray-300 dark:border-gray-600 bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-2 focus:ring-offset-0 focus:ring-primary/50 dark:focus:ring-offset-gray-800"
-                          type="checkbox"
-                        />
-                      </td>
-                      <td className="p-4 text-sm text-gray-900 dark:text-gray-100 whitespace-nowrap">
-                        Emily White
-                      </td>
-                      <td className="p-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                        Follow-up Session
-                      </td>
-                      <td className="p-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                        Nov 1, 2023, 02:00 PM
-                      </td>
-                      <td className="p-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                        Oct 24, 2023
-                      </td>
-                      <td className="p-4 text-sm whitespace-nowrap">
-                        <span className="inline-flex items-center rounded-full bg-yellow-100 dark:bg-yellow-900/50 px-2.5 py-0.5 text-xs font-semibold text-yellow-800 dark:text-yellow-300">
-                          In Progress
-                        </span>
-                      </td>
-                      <td className="p-4 text-sm whitespace-nowrap text-right">
-                        <button 
-                          onClick={() => handleViewDetails('3')}
-                          className="text-primary hover:underline font-semibold"
-                        >
-                          View Details
-                        </button>
-                      </td>
-                    </tr>
-                    <tr className="hover:bg-gray-50 dark:hover:bg-gray-900/50">
-                      <td className="p-4 w-12 text-center">
-                        <input
-                          className="h-5 w-5 rounded border-gray-300 dark:border-gray-600 bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-2 focus:ring-offset-0 focus:ring-primary/50 dark:focus:ring-offset-gray-800"
-                          type="checkbox"
-                        />
-                      </td>
-                      <td className="p-4 text-sm text-gray-900 dark:text-gray-100 whitespace-nowrap">
-                        Michael Brown
-                      </td>
-                      <td className="p-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                        Initial Consultation
-                      </td>
-                      <td className="p-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                        Oct 30, 2023, 11:00 AM
-                      </td>
-                      <td className="p-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                        Oct 22, 2023
-                      </td>
-                      <td className="p-4 text-sm whitespace-nowrap">
-                        <span className="inline-flex items-center rounded-full bg-gray-100 dark:bg-gray-700 px-2.5 py-0.5 text-xs font-semibold text-gray-800 dark:text-gray-300">
-                          Completed
-                        </span>
-                      </td>
-                      <td className="p-4 text-sm whitespace-nowrap text-right">
-                        <button 
-                          onClick={() => handleViewDetails('4')}
-                          className="text-primary hover:underline font-semibold"
-                        >
-                          View Details
-                        </button>
-                      </td>
-                    </tr>
-                    <tr className="hover:bg-gray-50 dark:hover:bg-gray-900/50">
-                      <td className="p-4 w-12 text-center">
-                        <input
-                          className="h-5 w-5 rounded border-gray-300 dark:border-gray-600 bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-2 focus:ring-offset-0 focus:ring-primary/50 dark:focus:ring-offset-gray-800"
-                          type="checkbox"
-                        />
-                      </td>
-                      <td className="p-4 text-sm text-gray-900 dark:text-gray-100 whitespace-nowrap">
-                        Jessica Green
-                      </td>
-                      <td className="p-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                        Full Day Package
-                      </td>
-                      <td className="p-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                        Nov 10, 2023, 09:00 AM
-                      </td>
-                      <td className="p-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                        Oct 21, 2023
-                      </td>
-                      <td className="p-4 text-sm whitespace-nowrap">
-                        <span className="inline-flex items-center rounded-full bg-red-100 dark:bg-red-900/50 px-2.5 py-0.5 text-xs font-semibold text-red-800 dark:text-red-300">
-                          Cancelled
-                        </span>
-                      </td>
-                      <td className="p-4 text-sm whitespace-nowrap text-right">
-                        <button 
-                          onClick={() => handleViewDetails('5')}
-                          className="text-primary hover:underline font-semibold"
-                        >
-                          View Details
-                        </button>
-                      </td>
-                    </tr>
+                    {loading ? (
+                      <tr>
+                        <td colSpan={7} className="p-6 text-center text-gray-500">Loading bookings...</td>
+                      </tr>
+                    ) : (
+                      (filterBookings().length === 0) ? (
+                        <tr>
+                          <td colSpan={7} className="p-6 text-center text-gray-500">
+                            {bookings.length === 0 ? 'No bookings found.' : 'No bookings match the current filters.'}
+                          </td>
+                        </tr>
+                      ) : (
+                        filterBookings().map((b) => (
+                          <tr key={b.id} className="hover:bg-gray-50 dark:hover:bg-gray-900/50">
+                            <td className="p-4 w-12 text-center">
+                              <input
+                                className="h-5 w-5 rounded border-gray-300 dark:border-gray-600 bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-2 focus:ring-offset-0 focus:ring-primary/50 dark:focus:ring-offset-gray-800"
+                                type="checkbox"
+                              />
+                            </td>
+                            <td className="p-4 text-sm whitespace-nowrap">
+                              <div className="flex items-center gap-2">
+                                <div className="h-2 w-2 rounded-full bg-primary"></div>
+                                {b.username || 'Client'}
+                              </div>
+                            </td>
+                            <td className="p-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap font-normal">
+                              {b.serviceName || b.serviceId || '—'}
+                            </td>
+                            <td className="p-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap font-normal">
+                              {b.date ? `${b.date}${b.time ? `, ${b.time}` : ''}` : '—'}
+                            </td>
+                            <td className="p-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap font-normal">
+                              {formatDate(b.createdAt)}
+                            </td>
+                            <td className="p-4 text-sm whitespace-nowrap">
+                              {getStatusBadge(b.status)}
+                            </td>
+                            <td className="p-4 text-sm whitespace-nowrap text-right">
+                              <button
+                                onClick={() => handleViewDetails(b.id)}
+                                className="text-primary hover:underline font-semibold"
+                              >
+                                View Details
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      )
+                    )}
                   </tbody>
                 </table>
               </div>
