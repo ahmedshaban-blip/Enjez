@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { doc, deleteDoc } from "firebase/firestore";
 import { getAllDocs, createUser } from "../utils/firebaseHelpers.js";
-import { db } from "../../config/firebase.js";
+import { db } from "../config/firebase.js";
 
 export function useClients() {
   const [clients, setClients] = useState([]);
