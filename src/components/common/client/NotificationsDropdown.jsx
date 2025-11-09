@@ -4,11 +4,11 @@ import NotificationsDropdown, {
 
 export { mockNotifications };
 
-export default function AdminNotificationsDropdown(props) {
+export default function ClientNotificationsDropdown(props) {
   return (
     <NotificationsDropdown
       {...props}
-      allNotificationsPath="/admin/notifications"
+      allNotificationsPath="/notifications"
     />
   );
 }

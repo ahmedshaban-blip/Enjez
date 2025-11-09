@@ -18,6 +18,7 @@ import RequestBooking from "./pages/client/Booking.jsx";
 import BookingConfirmation from "./pages/client/Confirmation.jsx";
 import MyBookings from "./pages/client/MyBookings.jsx";
 import BookingDetails from "./pages/client/BookingDetails.jsx";
+import ClientNotifications from "./pages/client/Notifications.jsx";
 
 // Admin Pages
 import AdminLayout from "./pages/admin/AdminLayout.jsx";
@@ -31,6 +32,7 @@ import AddService from "./pages/admin/AddService.jsx";
 import NotFound from './pages/NotFound.jsx';
 import Notifications from './pages/admin/Notifications.jsx';
 import ResetPassword from './pages/auth/ResetPassword.jsx';
+import ViewDetails from './pages/admin/ViewDetails.jsx';
 
 function App() {
   return (
@@ -45,7 +47,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ResetPassword />} />
-        
+
         // Protected Routes for authenticated users
 
         <Route element={<ProtectedRoute />}>
@@ -53,14 +55,14 @@ function App() {
           <Route path="/booking/confirmation/:id" element={<BookingConfirmation />} />
           <Route path="/mybookings/:id" element={<MyBookings />} />
           <Route path="/booking/details/:id" element={<BookingDetails />} />
+          <Route path="/notifications" element={<ClientNotifications />} />
         </Route>
-        
-        // Protected Routes for admin users
 
         <Route element={<AdminRoute />}>
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="bookings" element={<Bookings />} />
+            <Route path="booking/view-details/:id" element={<ViewDetails />} />
             <Route path="clients" element={<Clients />} />
             <Route path="services" element={<AdminServices />} />
             <Route path="reports" element={<Reports />} />
