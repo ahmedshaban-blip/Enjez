@@ -4,6 +4,7 @@ import logo from "../../assets/logo2.svg";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { getAuth, signOut } from "firebase/auth";
 import ClientNotificationsDropdown from "../common/client/NotificationsDropdown.jsx";
+import AboutUsPage from "../../pages/client/About.jsx";
 
 export default function Navbar() {
   const { user } = useAuth();

@@ -35,6 +35,7 @@ import Notifications from './pages/admin/Notifications.jsx';
 import ResetPassword from './pages/auth/ResetPassword.jsx';
 import ViewDetails from './pages/admin/ViewDetails.jsx';
 import ContactUs from './pages/client/Contact.jsx';
+import AboutUsPage from './pages/client/About.jsx';
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
         <Route path="/services" element={<ClientServices />} />
         <Route path="/services/:id" element={<ServicesDetails />} />
         <Route path="/how-it-works" element={<HowItWorks />} />
+        <Route path="/about" element={<AboutUsPage />} />
 
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
