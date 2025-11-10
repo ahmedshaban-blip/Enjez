@@ -19,6 +19,7 @@ import BookingConfirmation from "./pages/client/Confirmation.jsx";
 import MyBookings from "./pages/client/MyBookings.jsx";
 import BookingDetails from "./pages/client/BookingDetails.jsx";
 import ClientNotifications from "./pages/client/Notifications.jsx";
+import HowItWorks from "./pages/client/HowItWorks.jsx";
 
 // Admin Pages
 import AdminLayout from "./pages/admin/AdminLayout.jsx";
@@ -44,6 +45,7 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/services" element={<ClientServices />} />
         <Route path="/services/:id" element={<ServicesDetails />} />
+        <Route path="/how-it-works" element={<HowItWorks />} />
 
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
