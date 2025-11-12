@@ -3,14 +3,16 @@ import { Outlet, useLocation } from "react-router-dom";
 import AdminSidebar from "../../components/layout/AdminSidebar.jsx";
 import NotificationsDropdown from "../../components/common/admin/NotificationsDropdown.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
+import useNewBookingNotifier from "../../hooks/useNewBookingNotifier.ts";
 
 export default function AdminLayout() {
+  useNewBookingNotifier();
   const location = useLocation();
   const [showNotifications, setShowNotifications] = useState(false);
   const dropdownRef = useRef(null);
 
-  // جايب اليوزر من AuthContext
   const { user, currentUser } = useAuth();
+
   const activeUser = user || currentUser;
 
   const username =

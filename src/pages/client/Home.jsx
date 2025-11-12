@@ -1,4 +1,6 @@
 import Navbar from "../../components/layout/Navbar.jsx";
+import { useAuth } from "../../context/AuthContext.jsx";
+import useBookingViewedNotifier from "../../hooks/useBookingViewedNotifier.js";
 
 export default function Home() {
   const heroStyle = {
@@ -6,12 +8,13 @@ export default function Home() {
       'linear-gradient(rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.5) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuAw0irDX_ibvTRay1rtdL37gjx3YIhHR92OE8x-qHE8l5hUhxh5ncxrJQ6R84woxovqFOoC79I34SdZRuXzLN_XKtxO_YfFuS1byXqZO_LoR5icareNUBRfg11wbgjI9BTkBAIZLbGXg1tJqVwgzqmorsh2ftU15REDRN7Sdig2cmh0iWsyt5b76NmnV_MDDXIjtsYwsG4osuNFHS1XarYv7qFiacSiiNlmJ7DkqXWvy523p1Y5eyg1441qh4eYyWB4ZEaDvQlmnnxE")',
   };
 
+  const { currentUser } = useAuth();
+  useBookingViewedNotifier(currentUser?.uid);
   return (
     <div className="bg-white text-slate-900 min-h-screen flex flex-col">
       {/* Navbar */}
       <Navbar />
 
-      {/* الصفحة نفسها */}
       <main className="w-full max-w-7xl px-4 sm:px-6 lg:px-8 mx-auto">
         {/* Hero */}
         <section className="w-full py-20 sm:py-28 md:py-32">
