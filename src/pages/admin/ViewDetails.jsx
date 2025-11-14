@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { getDocById } from '../../utils/firebaseHelpers.js';
+import { getDocById, updateDocById } from '../../utils/firebaseHelpers.js';
+import { Timestamp } from 'firebase/firestore';
 
 const ViewDetails = () => {
   const { id } = useParams();
@@ -8,6 +9,8 @@ const ViewDetails = () => {
   const [service, setService] = useState(null);
   const [agent, setAgent] = useState(null);
   const [user, setUser] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState('');
+  const [updating, setUpdating] = useState(false);
 
   const formatDate = (value) => {
     try {
@@ -26,6 +29,15 @@ const ViewDetails = () => {
     if (st === 'cancelled' || st === 'canceled') return 'Cancelled';
     if (st === 'in progress' || st === 'in_progress') return 'In Progress';
     return 'New';
+  };
+
+  const statusClass = (s) => {
+    const st = (s || '').toLowerCase();
+    if (st === 'confirmed') return 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400';
+    if (st === 'in progress' || st === 'in_progress') return 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400';
+    if (st === 'completed') return 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400';
+    if (st === 'cancelled' || st === 'canceled') return 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400';
+    return 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400';
   };
 
   useEffect(() => {
@@ -66,6 +78,23 @@ const ViewDetails = () => {
     load();
     return () => { mounted = false; };
   }, [id]);
+
+  // Extracted update function for status so the button can call it directly
+  const handleUpdateStatus = async () => {
+    if (!id) return;
+    const newStatus = selectedStatus || booking?.status;
+    if (!newStatus || newStatus === booking?.status) return;
+    try {
+      setUpdating(true);
+      await updateDocById('bookings', id, { status: newStatus, updatedAt: Timestamp.now() });
+      setBooking((prev) => ({ ...(prev || {}), status: newStatus }));
+      console.log('Status updated to', newStatus);
+    } catch (error) {
+      console.error('Failed to update status:', error);
+    } finally {
+      setUpdating(false);
+    }
+  };
   return (
     <main className="flex-1 p-4 sm:p-6 md:p-8">
       <div className="max-w-7xl mx-auto">
@@ -89,11 +118,11 @@ const ViewDetails = () => {
             <p className="text-gray-900 dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em]">
               Booking #{id}
             </p>
-            <div className="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-blue-100 dark:bg-blue-900/30 px-4">
-              <p className="text-blue-600 dark:text-blue-400 text-sm font-medium leading-normal">
-                New
-              </p>
-            </div>
+              <div className={`flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg px-4 ${statusClass(booking?.status)}`}>
+                <p className="text-sm font-medium leading-normal">
+                  {statusLabel(booking?.status)}
+                </p>
+              </div>
           </div>
         </div>
 
@@ -174,17 +203,22 @@ const ViewDetails = () => {
                   <select
                     className="w-full rounded-lg border border-gray-300 dark:border-gray-700 p-2  dark:bg-gray-800 dark:text-white focus:border-blue-600 focus:ring-primary"
                     id="status-select"
-                    value={booking?.status || ''}
-                    onChange={() => {}}
+                    value={selectedStatus || booking?.status || 'new'}
+                    onChange={(e) => setSelectedStatus(e.target.value)}
                   >
                     <option value="new">New</option>
                     <option value="confirmed">Confirmed</option>
+                    <option value="in_progress">In Progress</option>
                     <option value="completed">Completed</option>
                     <option value="cancelled">Cancelled</option>
                   </select>
                 </div>
-                <button className="w-full bg-primary text-white bg-blue-600 font-semibold py-2.5 px-4 rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary dark:focus:ring-offset-background-dark">
-                  Update Status
+                <button
+                  onClick={handleUpdateStatus}
+                  disabled={updating || (selectedStatus === booking?.status)}
+                  className={`w-full font-semibold py-2.5 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 ${updating ? 'bg-gray-400 text-white' : 'bg-primary text-white hover:bg-primary/90'} dark:focus:ring-offset-background-dark`}
+                >
+                  {updating ? 'Updating...' : 'Update Status'}
                 </button>
               </div>
             </div>

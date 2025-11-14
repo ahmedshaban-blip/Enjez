@@ -1,5 +1,5 @@
 // src/utils/firebaseHelpers.js
-import { collection, addDoc, getDocs, getDoc, doc, Timestamp, query, where } from "firebase/firestore";
+import { collection, addDoc, getDocs, getDoc, doc, updateDoc, Timestamp, query, where } from "firebase/firestore";
 import { db } from "../config/firebase.js";
 
 // ===== Default structures =====
@@ -93,3 +93,15 @@ export const createBooking = (data) => createDoc("bookings", data);
 export const createAgent = (data) => createDoc("agents", data);
 export const createCategory = (data) => createDoc("categories", data);
 export const createMessage = (data) => createDoc("messages", data);
+
+// Update a document by ID in a collection
+export const updateDocById = async (collectionName, id, data) => {
+  try {
+    const docRef = doc(db, collectionName, id);
+    await updateDoc(docRef, data);
+    return true;
+  } catch (error) {
+    console.error(`Error updating document in ${collectionName} with ID ${id}:`, error);
+    throw error;
+  }
+};

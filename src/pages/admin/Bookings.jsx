@@ -140,10 +140,7 @@ const BookingContent = () => {
                   Review, confirm, and communicate with clients about their booking requests.
                 </p>
               </div>
-              <button className="flex min-w-[84px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold shadow-sm hover:bg-primary/90">
-                <span className="material-symbols-outlined">add</span>
-                <span className="truncate">Add New Booking</span>
-              </button>
+              
             </div>
 
             {/* Filters */}
