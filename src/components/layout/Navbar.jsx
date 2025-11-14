@@ -1,12 +1,18 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import logo from "../../assets/logo2.svg";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { getAuth, signOut } from "firebase/auth";
 import ClientNotificationsDropdown from "../common/client/NotificationsDropdown.jsx";
-import AboutUsPage from "../../pages/client/About.jsx";
+import { collection, query, where } from "firebase/firestore";
+import { db } from "../../config/firebase";
+import { useNotifications } from "../../hooks/useNotifications";
+import useNotificationSoundListener from "../../hooks/useNotificationSoundListener";
+
 
 export default function Navbar() {
+  useNotificationSoundListener("user");
+
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -43,6 +49,25 @@ export default function Navbar() {
   const username =
     user?.displayName ||
     (user?.email ? user.email.split("@")[0] : "User");
+
+
+  const notificationsQuery = useMemo(() => {
+    if (!user) return null;
+
+    return query(
+      collection(db, "notifications"),
+      where("role", "==", "user"),
+      where("userId", "==", user.uid)
+    );
+  }, [user]);
+
+  const { notifications } = useNotifications(notificationsQuery);
+
+  const unreadCount = useMemo(
+    () => notifications.filter((n) => !n.read).length,
+    [notifications]
+  );
+
 
   return (
     <header className="w-full border-b border-slate-200 bg-white">
@@ -151,22 +176,37 @@ export default function Navbar() {
                 <button
                   type="button"
                   onClick={() => setShowNotifications((prev) => !prev)}
-                  className={`h-10 w-10 rounded-full border flex items-center justify-center transition ${
-                    showNotifications
-                      ? "border-blue-200 text-blue-600 bg-blue-50"
-                      : "border-slate-300 text-slate-500 hover:text-blue-600 hover:border-blue-300"
-                  }`}
+                  className={`h-10 w-10 rounded-full border flex items-center justify-center transition ${showNotifications
+                    ? "border-blue-200 text-blue-600 bg-blue-50"
+                    : "border-slate-300 text-slate-500 hover:text-blue-600 hover:border-blue-300"
+                    }`}
                   aria-haspopup="true"
                   aria-expanded={showNotifications}
                   aria-label="Toggle notifications"
                 >
                   <span className="material-symbols-outlined text-xl">notifications</span>
+
+                  {unreadCount > 0 && (
+                    <span
+                      className="
+          absolute -top-1 -right-1
+          min-w-[18px] h-[18px] px-1
+          rounded-full bg-red-500
+          text-white text-[10px] leading-none
+          flex items-center justify-center
+        "
+                    >
+                      {unreadCount}
+                    </span>
+                  )}
                 </button>
+
                 <ClientNotificationsDropdown
                   open={showNotifications}
                   onNavigate={() => setShowNotifications(false)}
                 />
               </div>
+
               <button
                 onClick={handleLogout}
                 className="h-10 px-5 rounded-full border border-slate-300 text-sm font-medium text-slate-700 flex items-center justify-center hover:bg-slate-100 transition-colors"

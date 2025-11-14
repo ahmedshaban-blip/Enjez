@@ -1,23 +1,47 @@
-import { useEffect, useRef, useState } from "react";
+// src/pages/admin/AdminLayout.jsx
+import { useEffect, useRef, useState, useMemo } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import AdminSidebar from "../../components/layout/AdminSidebar.jsx";
 import NotificationsDropdown from "../../components/common/admin/NotificationsDropdown.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
 import useNewBookingNotifier from "../../hooks/useNewBookingNotifier.ts";
+import useNotificationSoundListener from "../../hooks/useNotificationSoundListener.js";
+
+import { collection, query, where, orderBy } from "firebase/firestore";
+import { db } from "../../config/firebase";
+import { useNotifications } from "../../hooks/useNotifications";
 
 export default function AdminLayout() {
+  useNotificationSoundListener("admin");
   useNewBookingNotifier();
+
   const location = useLocation();
   const [showNotifications, setShowNotifications] = useState(false);
   const dropdownRef = useRef(null);
 
   const { user, currentUser } = useAuth();
-
   const activeUser = user || currentUser;
 
   const username =
     activeUser?.displayName ||
     (activeUser?.email ? activeUser.email.split("@")[0] : "Admin");
+
+  const adminNotificationsQuery = useMemo(() => {
+    return query(
+      collection(db, "notifications"),
+      where("role", "==", "admin"),
+      orderBy("createdAt", "desc")
+    );
+  }, []);
+
+  const { notifications: adminNotifications } = useNotifications(
+    adminNotificationsQuery
+  );
+
+  const unreadCount = useMemo(
+    () => adminNotifications.filter((n) => !n.read).length,
+    [adminNotifications]
+  );
 
   useEffect(() => {
     const handleClick = (event) => {
@@ -64,6 +88,7 @@ export default function AdminLayout() {
                 />
               </label>
 
+              {/* Notifications + badge */}
               <div className="relative" ref={dropdownRef}>
                 <button
                   type="button"
@@ -76,9 +101,26 @@ export default function AdminLayout() {
                     notifications
                   </span>
                 </button>
+
+                {unreadCount > 0 && (
+                  <span
+                    className="
+        absolute -top-1 -right-1
+        min-w-[18px] h-[18px] px-1
+        rounded-full bg-red-500
+        text-white text-[10px] leading-none
+        flex items-center justify-center
+      "
+                  >
+                    {unreadCount}
+                  </span>
+                )}
+
                 <NotificationsDropdown open={showNotifications} />
               </div>
 
+
+              {/* User info */}
               <div className="flex items-center gap-3">
                 <div
                   className="size-10 rounded-full bg-cover bg-center"

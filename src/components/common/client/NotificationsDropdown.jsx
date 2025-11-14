@@ -1,9 +1,5 @@
-import NotificationsDropdown, {
-  mockNotifications,
-} from "../notifications/NotificationsDropdown.jsx";
 
-export { mockNotifications };
-
+import NotificationsDropdown from "../../common/notifications/NotificationsDropdown.jsx";
 export default function ClientNotificationsDropdown(props) {
   return (
     <NotificationsDropdown

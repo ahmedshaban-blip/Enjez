@@ -1,4 +1,4 @@
-
+// src/hooks/useBookingViewedNotifier.js
 import { useEffect } from 'react';
 import { collection, query, where, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';

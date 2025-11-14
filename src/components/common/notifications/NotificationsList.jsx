@@ -1,5 +1,12 @@
+//src/pages/admin/Notifications.jsx
+
 /* Shared notifications list */
-export function NotificationCard({ notification, onDelete, compact = false }) {
+export function NotificationCard({
+  notification,
+  onDelete,
+  onBookingSeen,   
+  compact = false,
+}) {
   const stateClasses = notification.read
     ? "bg-white border-slate-200 dark:bg-background-dark dark:border-gray-800"
     : "bg-blue-50 border-blue-100 dark:bg-blue-950/30 dark:border-blue-900";
@@ -23,16 +30,36 @@ export function NotificationCard({ notification, onDelete, compact = false }) {
         <div
           className={`flex ${iconWrapperClasses} items-center justify-center rounded-full bg-blue-100 text-blue-600`}
         >
-          <span className="material-symbols-outlined">{notification.icon || "notifications"}</span>
+          <span className="material-symbols-outlined">
+            {notification.icon || "notifications"}
+          </span>
         </div>
+
         <div className="flex-1">
           <div className="flex items-start justify-between gap-3">
-            <div>
+            <div className="flex-1 space-y-1">
               <p className={`${titleClasses} font-semibold text-slate-900 dark:text-gray-100`}>
                 {notification.title}
               </p>
               <p className={messageClasses}>{notification.message}</p>
+
+           
+              {onBookingSeen &&
+                notification.type === "booking_created" &&
+                !notification.adminSaw && (
+                  <button
+                    type="button"
+                    onClick={() => onBookingSeen(notification)}
+                    className="mt-2 inline-flex items-center gap-1 rounded-full bg-blue-600 px-3 py-1 text-xs font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 dark:focus:ring-offset-slate-900"
+                  >
+                    <span className="material-symbols-outlined text-sm">
+                      done_all
+                    </span>
+                    <span>The booking was received</span>
+                  </button>
+                )}
             </div>
+
             {onDelete && (
               <button
                 type="button"
@@ -44,7 +71,10 @@ export function NotificationCard({ notification, onDelete, compact = false }) {
               </button>
             )}
           </div>
-          <p className="text-xs text-slate-500 dark:text-gray-500 mt-2">{notification.time}</p>
+
+          <p className="text-xs text-slate-500 dark:text-gray-500 mt-2">
+            {notification.time}
+          </p>
         </div>
       </div>
     </article>
@@ -54,6 +84,7 @@ export function NotificationCard({ notification, onDelete, compact = false }) {
 export default function NotificationsList({
   notifications,
   onDelete,
+  onBookingSeen, 
   emptyMessage = "You are all caught up. New notifications will appear here.",
   className = "",
   compact = false,
@@ -77,6 +108,7 @@ export default function NotificationsList({
           key={notification.id}
           notification={notification}
           onDelete={onDelete}
+          onBookingSeen={onBookingSeen} 
           compact={compact}
         />
       ))}

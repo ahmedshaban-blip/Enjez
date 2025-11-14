@@ -1,67 +1,37 @@
-/* Shared notifications dropdown */
-import { useMemo, useState } from "react";
+// src/components/common/notifications/NotificationsDropdown.jsx
+
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import NotificationsList from "./NotificationsList.jsx";
 
-export const mockNotifications = [
-  {
-    id: "1",
-    title: "Booking confirmed",
-    message: "Your booking for Deep Home Cleaning was confirmed.",
-    time: "2h ago",
-    read: false,
-    icon: "event_available",
-  },
-  {
-    id: "2",
-    title: "New review",
-    message: "Emily Carter left a 5-star review on Premium Spa Treatment.",
-    time: "5h ago",
-    read: false,
-    icon: "star",
-  },
-  {
-    id: "3",
-    title: "Reminder",
-    message: "Remember to rate your last booking with Mike Ross.",
-    time: "1d ago",
-    read: true,
-    icon: "notifications",
-  },
-  {
-    id: "4",
-    title: "Payment processed",
-    message: "Your payment for Deep Cleaning has been processed.",
-    time: "3d ago",
-    read: true,
-    icon: "credit_score",
-  },
-  {
-    id: "5",
-    title: "Limited offer",
-    message: "Get 15% off gardening services this week.",
-    time: "5d ago",
-    read: false,
-    icon: "local_offer",
-  },
-  {
-    id: "6",
-    title: "Profile tip",
-    message: "Add a phone number to receive SMS updates.",
-    time: "1w ago",
-    read: true,
-    icon: "call",
-  },
-];
+import { useNotifications } from "../../../hooks/useNotifications";
+import {
+  deleteNotification,
+  markAllAsRead,
+} from "../../../config/notificationService.js";
+import { db } from "../../../config/firebase";
+import { collection, query, where, orderBy, limit } from "firebase/firestore";
+import { useAuth } from "../../../context/AuthContext";
+
+export const mockNotifications = []; 
 
 export default function NotificationsDropdown({
   open,
   onNavigate,
   allNotificationsPath = "/notifications",
 }) {
-  const [notifications, setNotifications] = useState(() =>
-    mockNotifications.map((item) => ({ ...item }))
-  );
+  const { user } = useAuth();
+
+  const notificationsQuery = useMemo(() => {
+    return query(
+      collection(db, "notifications"),
+      where("role", "==", "user"),
+      where("userId", "==", user.uid),      
+      orderBy("createdAt", "desc")
+    );
+  }, [user.uid]);
+
+  const { notifications, loading } = useNotifications(notificationsQuery);
 
   const unreadCount = useMemo(
     () => notifications.filter((notification) => !notification.read).length,
@@ -71,20 +41,27 @@ export default function NotificationsDropdown({
   if (!open) return null;
 
   const handleMarkAllRead = () => {
-    setNotifications((prev) => prev.map((notification) => ({ ...notification, read: true })));
+    if (!notifications.length) return;
+    markAllAsRead(notifications);
   };
 
   const handleDelete = (id) => {
-    setNotifications((prev) => prev.filter((notification) => notification.id !== id));
+    deleteNotification(id);
   };
 
   return (
     <div className="absolute right-0 top-12 z-50 w-80 rounded-2xl border border-slate-200 bg-white shadow-xl p-4 dark:bg-gray-900 dark:border-gray-700">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-semibold text-slate-900 dark:text-gray-100">Notifications</p>
+          <p className="text-sm font-semibold text-slate-900 dark:text-gray-100">
+            Notifications
+          </p>
           <p className="text-xs text-slate-500 dark:text-gray-400">
-            {unreadCount ? `${unreadCount} unread` : "All caught up"}
+            {loading
+              ? "Loading..."
+              : unreadCount
+              ? `${unreadCount} unread`
+              : "All caught up"}
           </p>
         </div>
         <button
@@ -105,13 +82,19 @@ export default function NotificationsDropdown({
         </button>
       </div>
 
-      <NotificationsList
-        notifications={notifications}
-        onDelete={handleDelete}
-        compact
-        className="mt-4 max-h-80 overflow-y-auto pr-1"
-        emptyMessage="You have no notifications."
-      />
+      {loading ? (
+        <p className="mt-4 text-xs text-slate-500 dark:text-gray-400">
+          Loading notifications...
+        </p>
+      ) : (
+        <NotificationsList
+          notifications={notifications}
+          onDelete={handleDelete}
+          compact
+          className="mt-4 max-h-80 overflow-y-auto pr-1"
+          emptyMessage="You have no notifications."
+        />
+      )}
 
       <Link
         to={allNotificationsPath}
@@ -119,7 +102,9 @@ export default function NotificationsDropdown({
         className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700"
       >
         All Notifications
-        <span className="material-symbols-outlined text-base">chevron_right</span>
+        <span className="material-symbols-outlined text-base">
+          chevron_right
+        </span>
       </Link>
     </div>
   );
