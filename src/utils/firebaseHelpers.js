@@ -1,5 +1,5 @@
 // src/utils/firebaseHelpers.js
-import { collection, addDoc, getDocs, getDoc, doc, updateDoc, Timestamp, query, where } from "firebase/firestore";
+import { collection, addDoc, getDocs, getDoc, doc, updateDoc, deleteDoc, Timestamp, query, where } from "firebase/firestore";
 import { db } from "../config/firebase.js";
 
 // ===== Default structures =====
@@ -42,7 +42,7 @@ export const defaultAgent = {
 
 export const defaultCategory = {
   name: "",
-  description: ""
+  createdAt: Timestamp.now(),
 };
 
 // ========== CRUD helpers ==========
@@ -86,14 +86,6 @@ export async function getDocsByField(collectionName, field, value) {
   }
 }
 
-// ========== Specific create functions ==========
-export const createUser = (data) => createDoc("users", data);
-export const createService = (data) => createDoc("services", data);
-export const createBooking = (data) => createDoc("bookings", data);
-export const createAgent = (data) => createDoc("agents", data);
-export const createCategory = (data) => createDoc("categories", data);
-export const createMessage = (data) => createDoc("messages", data);
-
 // Update a document by ID in a collection
 export const updateDocById = async (collectionName, id, data) => {
   try {
@@ -105,3 +97,29 @@ export const updateDocById = async (collectionName, id, data) => {
     throw error;
   }
 };
+
+// Delete
+export const deleteDocById = async (collectionName, id) => {
+  const ref = doc(db, collectionName, id);
+  return await deleteDoc(ref);
+};
+
+// ========== Specific create functions ==========
+export const createUser = (data) => createDoc("users", data);
+export const createService = (data) => createDoc("services", data);
+export const createBooking = (data) => createDoc("bookings", data);
+export const createAgent = (data) => createDoc("agents", data);
+export const createCategory = (data) => createDoc("categories", data);
+export const createMessage = (data) => createDoc("messages", data);
+
+// category
+
+export const getAllCategories = () => getAllDocs("categories");
+export const addCategory = (name) =>
+  createDoc("categories", { name: name.trim() });
+
+export const updateCategoryById = (id, name) =>
+  updateDocById("categories", id, { name });
+
+export const deleteCategoryById = (id) =>
+  deleteDocById("categories", id);

@@ -3,47 +3,34 @@ import Modal from "../components/ui/Modal";
 
 const ModalContext = createContext();
 
-// eslint-disable-next-line react-refresh/only-export-components
-export  const useModal = () => useContext(ModalContext);
+export const useModal = () => useContext(ModalContext);
 
 export const ModalProvider = ({ children }) => {
   const [modal, setModal] = useState({
     visible: false,
     title: "",
     message: "",
-    type: "info", // "info" | "error" | "success"
-    actionLabel: "",
-    onAction: null,
+    type: "info",
+    confirmLabel: "",
+    onConfirm: null,
   });
 
-  const showModal = (dataOrTitle, message) => {
-    if (typeof dataOrTitle === "object") {
-      const {
-        title,
-        message,
-        type = "info",
-        actionLabel = "",
-        onAction = null,
-      } = dataOrTitle;
-
-      setModal({
-        visible: true,
-        title: title || "",
-        message: message || "",
-        type,
-        actionLabel,
-        onAction,
-      });
-      return;
-    }
+  const showModal = (data) => {
+    const {
+      title = "",
+      message = "",
+      type = "info",
+      confirmLabel = "",
+      onConfirm = null,
+    } = data;
 
     setModal({
       visible: true,
-      title: dataOrTitle || "",
-      message: message || "",
-      type: "info",
-      actionLabel: "",
-      onAction: null,
+      title,
+      message,
+      type,
+      confirmLabel,
+      onConfirm,
     });
   };
 
@@ -53,30 +40,30 @@ export const ModalProvider = ({ children }) => {
       title: "",
       message: "",
       type: "info",
-      actionLabel: "",
-      onAction: null,
+      confirmLabel: "",
+      onConfirm: null,
     });
   };
 
   return (
     <ModalContext.Provider value={{ showModal, hideModal }}>
-      {/* نبعت title فاضي عشان المودال نفسه ما يرسمش عنوانه */}
       <Modal open={modal.visible} onClose={hideModal} title="">
-        {/* العنوان بأبيض */}
+        
+        {/* Title */}
         {modal.title && (
           <h2 className="text-lg font-semibold text-white mb-3">
             {modal.title}
           </h2>
         )}
 
-        {/* الرسالة */}
+        {/* Message */}
         {modal.message && (
           <p
-            className={`text-sm font-medium ${
+            className={`text-sm ${
               modal.type === "error"
-                ? "text-red-500"
+                ? "text-red-400"
                 : modal.type === "success"
-                ? "text-green-600"
+                ? "text-green-300"
                 : "text-gray-200"
             }`}
           >
@@ -84,20 +71,27 @@ export const ModalProvider = ({ children }) => {
           </p>
         )}
 
-        {/* زرار action */}
-        {modal.actionLabel && modal.onAction && (
-          <div className="mt-4 flex justify-end">
+        {/* Buttons */}
+        <div className="mt-6 flex justify-end gap-3">
+          <button
+            onClick={hideModal}
+            className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400"
+          >
+            Cancel
+          </button>
+
+          {modal.confirmLabel && modal.onConfirm && (
             <button
               onClick={() => {
-                modal.onAction();
+                modal.onConfirm();
                 hideModal();
               }}
-              className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
             >
-              {modal.actionLabel}
+              {modal.confirmLabel}
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </Modal>
 
       {children}
@@ -106,3 +100,4 @@ export const ModalProvider = ({ children }) => {
 };
 
 export default ModalContext;
+
