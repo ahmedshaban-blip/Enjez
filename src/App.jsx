@@ -37,6 +37,7 @@ import ViewDetails from './pages/admin/ViewDetails.jsx';
 import ContactUs from './pages/client/Contact.jsx';
 import AboutUsPage from './pages/client/About.jsx';
 import Categories from './pages/admin/Categories.jsx';
+import Agents from './pages/admin/Agents.jsx';
 
 function App() {
   return (
@@ -77,6 +78,7 @@ function App() {
             <Route path="add-service" element={<AddService />} />
             <Route path="notifications" element={<Notifications />} />
             <Route path="categories" element={<Categories />} />
+            <Route path="agents" element={<Agents />} />
           </Route>
         </Route>
 

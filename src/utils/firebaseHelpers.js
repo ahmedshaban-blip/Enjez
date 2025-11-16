@@ -37,7 +37,8 @@ export const defaultAgent = {
   name: "",
   email: "",
   phone: "",
-  services: [] // array of service IDs
+  services: [], // array of service IDs
+  createdAt: Timestamp.now(),
 };
 
 export const defaultCategory = {
@@ -123,3 +124,38 @@ export const updateCategoryById = (id, name) =>
 
 export const deleteCategoryById = (id) =>
   deleteDocById("categories", id);
+
+// agents
+
+export const getAllAgents = () => getAllDocs("agents");
+// export const addAgent = (name, email, phone, services = []) =>
+//   createDoc("agents", {
+//     name: name.trim(),
+//     email: email.trim(),
+//     phone: phone.trim(),
+//     services,
+//     createdAt: Timestamp.now(),
+//   }
+
+// );
+
+export const addAgent = async (name, email, phone, services = []) => {
+  const id = await createDoc("agents", {
+    name: name.trim(),
+    email: email.trim(),
+    phone: phone.trim(),
+    services,
+    createdAt: Timestamp.now(),
+  });
+
+  return { id }; // ← الصفحة مستنية ده
+};
+
+export const updateAgentById = (id, data) =>
+  updateDocById("agents", id, data);
+
+export const deleteAgentById = (id) =>
+  deleteDocById("agents", id);
+
+
+export const getAllServices = () => getAllDocs("services");
