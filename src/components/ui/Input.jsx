@@ -1,3 +1,4 @@
+// src/components/ui/Input.jsx
 export default function Input({
   id,
   label,

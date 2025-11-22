@@ -1,315 +1,258 @@
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../../components/layout/Navbar.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
 import useBookingViewedNotifier from "../../hooks/useBookingViewedNotifier.js";
-
+import { Search, MapPin, Calendar, ArrowRight, Star, ShieldCheck, Clock, CheckCircle2 } from "lucide-react";
+import Logo from "../../assets/logo2.svg";
 export default function Home() {
-  const heroStyle = {
-    backgroundImage:
-      'linear-gradient(rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.5) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuAw0irDX_ibvTRay1rtdL37gjx3YIhHR92OE8x-qHE8l5hUhxh5ncxrJQ6R84woxovqFOoC79I34SdZRuXzLN_XKtxO_YfFuS1byXqZO_LoR5icareNUBRfg11wbgjI9BTkBAIZLbGXg1tJqVwgzqmorsh2ftU15REDRN7Sdig2cmh0iWsyt5b76NmnV_MDDXIjtsYwsG4osuNFHS1XarYv7qFiacSiiNlmJ7DkqXWvy523p1Y5eyg1441qh4eYyWB4ZEaDvQlmnnxE")',
-  };
-
   const { currentUser } = useAuth();
   useBookingViewedNotifier(currentUser?.uid);
+  const navigate = useNavigate();
+
+  // State for search (optional visual functionality)
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    navigate(`/services?search=${searchTerm}`);
+  };
+
+  const categories = [
+    { name: "Home Cleaning", img: "https://scrubnbubbles.com/wp-content/uploads/2022/05/cleaning-service.jpeg" },
+    { name: "Plumbing", img: "https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?q=80&w=1000&auto=format&fit=crop" },
+    { name: "Electrical", img: "https://swiftcare.pk/wp-content/uploads/2021/12/8-Benefits-of-Electrical-Contractors-for-Your-Company-Featured.jpg" },
+    { name: "Moving", img: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?q=80&w=1000&auto=format&fit=crop" },
+    { name: "Painting", img: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?q=80&w=1000&auto=format&fit=crop" },
+  ];
+
   return (
-    <div className="bg-white text-slate-900 min-h-screen flex flex-col">
-      {/* Navbar */}
+    <div className="bg-white text-slate-900 min-h-screen flex flex-col font-sans">
       <Navbar />
 
-      <main className="w-full max-w-7xl px-4 sm:px-6 lg:px-8 mx-auto">
-        {/* Hero */}
-        <section className="w-full py-20 sm:py-28 md:py-32">
-          <div className="relative @container">
-            <div
-              className="flex min-h-[480px] flex-col gap-6 rounded-xl bg-cover bg-center bg-no-repeat items-start justify-end px-6 pb-10 @[480px]:px-10 @[768px]:items-center @[768px]:text-center"
-              style={heroStyle}
-            >
-              <div className="flex flex-col gap-4 max-w-2xl">
-                <h1 className="text-white text-4xl font-black leading-tight tracking-tight @[480px]:text-5xl @[768px]:text-6xl">
-                  Effortless Booking for Any Service You Need
-                </h1>
-                <h2 className="text-white/90 text-base font-normal leading-normal @[480px]:text-lg">
-                  Find and book trusted professionals for everything on your
-                  to-do list.
-                </h2>
-              </div>
-              <button className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-6 bg-blue-600 text-white text-base font-bold leading-normal tracking-wide hover:bg-blue-700 transition-colors">
-                <span className="truncate">Browse Services</span>
+      <main className="flex-grow">
+
+        {/* --- Hero Section --- */}
+        <div className="relative bg-slate-900 pb-32">
+          {/* Background Image with Overlay */}
+          <div className="absolute inset-0 overflow-hidden">
+            <img
+              src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f?q=80&w=2070&auto=format&fit=crop"
+              alt="Background"
+              className="h-full w-full object-cover opacity-40"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-slate-900/60 to-slate-900/90" />
+          </div>
+
+          <div className="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8 lg:py-32 text-center">
+            <h1 className="text-4xl font-black tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
+              <span className="block">Find the perfect</span>
+              <span className="block text-blue-500">professional for you</span>
+            </h1>
+            <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-300">
+              Get your to-do list done with trusted professionals. From home cleaning to repairs, we've got you covered.
+            </p>
+
+            <div className="mt-10 flex justify-center gap-4">
+              <button
+                onClick={() => navigate('/services')}
+                className="px-8 py-3.5 rounded-full bg-blue-600 text-white font-bold text-lg hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-500/30"
+              >
+                Book a Service
+              </button>
+              <button
+                onClick={() => navigate('/how-it-works')}
+                className="px-8 py-3.5 rounded-full bg-white/10 backdrop-blur-sm text-white font-bold text-lg hover:bg-white/20 transition-all border border-white/20"
+              >
+                How it works
               </button>
             </div>
           </div>
-        </section>
+        </div>
 
-        {/* Search bar */}
-        <section className="w-full -mt-16 sm:-mt-20 md:-mt-24 pb-16">
-          <div className="bg-white p-2 rounded-xl shadow-lg border border-slate-200 max-w-3xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-              {/* Service */}
-              <label className="flex flex-col w-full">
-                <div className="flex w-full flex-1 items-stretch rounded-lg h-12">
-                  <div className="text-slate-500 flex bg-white items-center justify-center pl-4 rounded-l-lg border border-r-0 border-slate-200">
-                    <span className="material-symbols-outlined">
-                      design_services
-                    </span>
-                  </div>
+        {/* --- Floating Search Bar --- */}
+        <div className="relative -mt-24 px-4 sm:px-6 lg:px-8 z-20">
+          <div className="mx-auto max-w-4xl bg-white rounded-2xl shadow-2xl shadow-slate-900/10 p-2 sm:p-3 border border-slate-100">
+            <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-2 divide-y md:divide-y-0 md:divide-x divide-slate-100">
+
+              {/* Search Input */}
+              <div className="flex-1 flex items-center px-4 py-2">
+                <Search className="w-5 h-5 text-blue-500 mr-3" />
+                <div className="flex-1">
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide">Service</label>
                   <input
-                    className="flex w-full min-w-0 flex-1 overflow-hidden rounded-lg text-slate-900 focus:outline-0 focus:ring-2 focus:ring-blue-500/40 border bg-white border-slate-200 h-full placeholder:text-slate-400 px-4 rounded-l-none border-l-0 pl-2 text-base"
-                    placeholder="What service?"
+                    type="text"
+                    placeholder="What help do you need?"
+                    className="w-full text-slate-900 font-semibold placeholder:text-slate-300 focus:outline-none"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
-              </label>
+              </div>
 
-              {/* Location */}
-              <label className="flex flex-col w-full">
-                <div className="flex w-full flex-1 items-stretch rounded-lg h-12">
-                  <div className="text-slate-500 flex bg-white items-center justify-center pl-4 rounded-l-lg border border-r-0 border-slate-200">
-                    <span className="material-symbols-outlined">
-                      location_on
-                    </span>
-                  </div>
-                  <input
-                    className="flex w-full min-w-0 flex-1 overflow-hidden rounded-lg text-slate-900 focus:outline-0 focus:ring-2 focus:ring-blue-500/40 border bg-white border-slate-200 h-full placeholder:text-slate-400 px-4 rounded-l-none border-l-0 pl-2 text-base"
-                    placeholder="Location"
-                  />
+              {/* Location Input */}
+              <div className="flex-1 flex items-center px-4 py-2">
+                <MapPin className="w-5 h-5 text-blue-500 mr-3" />
+                <div className="flex-1">
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide">Location</label>
+                  <input type="text" placeholder="Cairo, Egypt" className="w-full text-slate-900 font-semibold placeholder:text-slate-300 focus:outline-none" />
                 </div>
-              </label>
+              </div>
 
-              {/* Date */}
-              <label className="flex flex-col w-full">
-                <div className="flex w-full flex-1 items-stretch rounded-lg h-12">
-                  <div className="text-slate-500 flex bg-white items-center justify-center pl-4 rounded-l-lg border border-r-0 border-slate-200">
-                    <span className="material-symbols-outlined">
-                      calendar_month
-                    </span>
+              {/* Search Button */}
+              <div className="p-2">
+                <button type="submit" className="w-full md:w-auto h-full aspect-square bg-slate-900 hover:bg-blue-600 text-white rounded-xl flex items-center justify-center transition-colors">
+                  <ArrowRight className="w-6 h-6" />
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        {/* --- Services Categories --- */}
+        <section className="py-20 sm:py-24">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">Popular Services</h2>
+              <p className="mt-4 text-lg text-slate-600">Explore our most requested services by customers like you.</p>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+              {categories.map((cat, idx) => (
+                <div
+                  key={idx}
+                  onClick={() => navigate('/services')}
+                  className="group relative aspect-[3/4] overflow-hidden rounded-2xl cursor-pointer shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
+                >
+                  <img src={cat.img} alt={cat.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <h3 className="text-white font-bold text-lg">{cat.name}</h3>
+                    <p className="text-slate-300 text-sm flex items-center gap-1 group-hover:text-blue-400 transition-colors">
+                      Book Now <ArrowRight className="w-3 h-3" />
+                    </p>
                   </div>
-                  <input
-                    type="date"
-                    className="flex w-full min-w-0 flex-1 overflow-hidden rounded-lg text-slate-900 focus:outline-0 focus:ring-2 focus:ring-blue-500/40 border bg-white border-slate-200 h-full placeholder:text-slate-400 px-4 rounded-l-none border-l-0 pl-2 text-base"
-                  />
                 </div>
-              </label>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* Explore Services */}
-        <section className="w-full py-16">
-          <h2 className="text-slate-900 text-3xl font-bold leading-tight tracking-tight text-center px-4 pb-12">
-            Explore Our Services
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-            {/* Home Cleaning */}
-            <div className="flex flex-col items-center text-center gap-3 p-4 rounded-xl hover:bg-slate-50 transition-colors">
-              <div
-                className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
-                style={{
-                  backgroundImage:
-                    'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCxdjTp1eOz0Wk5P1qUmHWO2VWmQABGMM6mmAZyIMrCN83RI63Tr2ygs49g_KHlqbB8WOEHvJhqOK-hjsgWQpbYR590UeBWZzL8y3c8MX44PU1rP_GixBSKZRWHLX3Ekme0i_BEDkUqu2axW-leLMD0kcqVoXlZvQB_P6CPBRke3YEm52yqSwXplxJyldBog1OtmykkRggXMflsXqazb4rj7vIffFknXPmPClr6h1MpllefO3u2ui1yQsIRvjrs5pE-HjBMONvlbsiX")',
-                }}
-              />
-              <p className="text-base font-medium leading-normal">
-                Home Cleaning
-              </p>
+        {/* --- Features / How it works --- */}
+        <section className="bg-slate-50 py-20 sm:py-24 border-y border-slate-200">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">Why Choose Us?</h2>
+              <p className="mt-4 text-lg text-slate-600">We make it easy to get things done.</p>
             </div>
 
-            {/* Tutoring */}
-            <div className="flex flex-col items-center text-center gap-3 p-4 rounded-xl hover:bg-slate-50 transition-colors">
-              <div
-                className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
-                style={{
-                  backgroundImage:
-                    'url("https://lh3.googleusercontent.com/aida-public/AB6AXuDCdeq2pvOLGkYmJZuybVXUKBkgmy9CZO9atCNxi7dWaKJop3DoVrg9_sTUCU91JZtbl-mzHL65Bbd-_aNbG_090RfonaJPV1qr3roweuEb8RB-hFKNxegf3NB7MlIDb_2wMvbOUVZGzEo93eDBJEhLICXSX-7CqKiNYjeUrXfbI0GKiACZM_rt8LLug9Vl4-g5EggzXjevyWOiECsi6-mLUulZt96ui_IlGTwBvv6aW-hwFKqPtJWDUkZqN_Q3YmzBrjy3-zpL3kgQ")',
-                }}
-              />
-              <p className="text-base font-medium leading-normal">Tutoring</p>
-            </div>
-
-            {/* Handyman */}
-            <div className="flex flex-col items-center text-center gap-3 p-4 rounded-xl hover:bg-slate-50 transition-colors">
-              <div
-                className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
-                style={{
-                  backgroundImage:
-                    'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAvbGTFJGxUYNyjXhlPHOWS6sjOEy6TGN7uZno6HkAZtVzr06eaJQXzoiGNoGVrmTteSkrGoTzHCsZAAaA2Wi7joVp-ApnWPqX8KJvPEkhBIlcNFXkkiSCmGdbj9TQ-v5Fr-KoW99okSJZ7wG_-Ez-T6bSjDuPpvoU84k0De568UKf1ZI3iK9SyLbuMgu7WPvNRRtlTPjETa7Q8lv02Mga4vZWzjuk6hSGGsAVHQDxsSeYLGz_417fnrm-de9IYasvtxLj4hDBcQ9wg")',
-                }}
-              />
-              <p className="text-base font-medium leading-normal">Handyman</p>
-            </div>
-
-            {/* Lawn Care */}
-            <div className="flex flex-col items-center text-center gap-3 p-4 rounded-xl hover:bg-slate-50 transition-colors">
-              <div
-                className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
-                style={{
-                  backgroundImage:
-                    'url("https://lh3.googleusercontent.com/aida-public/AB6AXuDG0aPnJ1dHc9qLbRQIXKuKYTc5fWoNuEBW6dBKtgwL5LUSOeKmbKeRntKBVBRBWgysKLKtR3r1D_gNCg8YNoiJRKzK0uWA8kJbPP-zjvh-kCcx0Er3PiY6PWEMyVbZ6E93QN1doCIEJ6aseH1c4V-WlNVpHjexZMKeS7qJjw6egavchTy32HAkmYi0DBmYAZ6_qB1u5x4g5oXdmx84xLwBhN13LmkdooDHm7A4UGUhWmaqPywHts8o9FxdT4BqXSCLq5uDSbQCuIQ_")',
-                }}
-              />
-              <p className="text-base font-medium leading-normal">Lawn Care</p>
-            </div>
-
-            {/* Pet Grooming */}
-            <div className="flex flex-col items-center text-center gap-3 p-4 rounded-xl hover:bg-slate-50 transition-colors">
-              <div
-                className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
-                style={{
-                  backgroundImage:
-                    'url("https://lh3.googleusercontent.com/aida-public/AB6AXuBog4oEYfqC7Ib0W_EZHXOAkL9Zv5AIJu9aSrzztpIDdvzbXFMeKaxBUqdiQJ7JnagnasnsgFSfIkaZr0cB21CnNDG9z7-WsHD1iqCiq8eb6fnI-2BN2ahzl7ZzR0FyRW6lHiLEPHZy9UulyJcY35KhFQXHNgp1uQ6yHAy4q5ARms2vBhIurbyAAxiT1hbIsrNfSrtKnR-d-TaCiTvJPWU0cQxt_GsVefqA4O65mmlJYOnvweBo-VHCdVXvtleDyJrVlYoYzfeY6TG6")',
-                }}
-              />
-              <p className="text-base font-medium leading-normal">
-                Pet Grooming
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* How it works */}
-        <section className="w-full py-16">
-          <h2 className="text-slate-900 text-3xl font-bold leading-tight tracking-tight text-center px-4 pb-12">
-            How It Works
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div className="flex flex-col items-center gap-4 p-6">
-              <div className="flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 text-blue-600">
-                <span className="material-symbols-outlined text-4xl">
-                  search
-                </span>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+              {/* Feature 1 */}
+              <div className="flex flex-col items-center text-center">
+                <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center text-blue-600 mb-6 rotate-3 hover:rotate-6 transition-transform">
+                  <ShieldCheck className="w-8 h-8" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">Verified Professionals</h3>
+                <p className="text-slate-600 leading-relaxed">Every pro on our platform is screened, background-checked, and rated by customers.</p>
               </div>
-              <h3 className="text-xl font-bold">1. Find a Service</h3>
-              <p className="text-slate-500">
-                Browse categories or search for the exact professional you need.
-              </p>
-            </div>
 
-            <div className="flex flex-col items-center gap-4 p-6">
-              <div className="flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 text-blue-600">
-                <span className="material-symbols-outlined text-4xl">
-                  calendar_add_on
-                </span>
+              {/* Feature 2 */}
+              <div className="flex flex-col items-center text-center">
+                <div className="w-16 h-16 rounded-2xl bg-purple-100 flex items-center justify-center text-purple-600 mb-6 -rotate-3 hover:-rotate-6 transition-transform">
+                  <Clock className="w-8 h-8" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">Save Time</h3>
+                <p className="text-slate-600 leading-relaxed">Book a service in less than 60 seconds. We handle the scheduling so you can relax.</p>
               </div>
-              <h3 className="text-xl font-bold">2. Book with Ease</h3>
-              <p className="text-slate-500">
-                Select a date and time that works for you and confirm your
-                booking instantly.
-              </p>
-            </div>
 
-            <div className="flex flex-col items-center gap-4 p-6">
-              <div className="flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 text-blue-600">
-                <span className="material-symbols-outlined text-4xl">
-                  relax
-                </span>
+              {/* Feature 3 */}
+              <div className="flex flex-col items-center text-center">
+                <div className="w-16 h-16 rounded-2xl bg-emerald-100 flex items-center justify-center text-emerald-600 mb-6 rotate-3 hover:rotate-6 transition-transform">
+                  <Star className="w-8 h-8" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">Satisfaction Guaranteed</h3>
+                <p className="text-slate-600 leading-relaxed">We are committed to your happiness. If you are not satisfied, we will make it right.</p>
               </div>
-              <h3 className="text-xl font-bold">3. Relax &amp; Enjoy</h3>
-              <p className="text-slate-500">
-                A trusted professional arrives to get the job done right.
-                It&apos;s that simple.
-              </p>
             </div>
           </div>
         </section>
 
-        {/* Testimonial */}
-        <section className="w-full py-16">
-          <div className="bg-slate-50 rounded-xl p-8 md:p-12 lg:p-16">
-            <div className="flex flex-col items-center text-center max-w-2xl mx-auto">
-              <img
-                className="w-20 h-20 rounded-full object-cover mb-6"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1coKpBmd4gxF3oL7nR2pB_dvGDEQ7YdV8yNvR3BqFYdZIy21lOxliNXEGKF2vIVKfWFN6M_qRKEPOh99iDIJ2bYZSdYHwAftvawCx3JoOIEyfi8qH2Eq0qKsc7k7Y3H55xlzYmKdglCuHSi9IBNoolql9V9lU7tuYXRPa0GemoK3uHCrfzLoNeoO01Q4zCk0fHJtAzKlKgF8QwN3MayIGjQG9Xp9ca-DriXgjK-b6QjSnhD9vFGyyiZ1mwY5mTjj44rDFMLjX_F0q"
-                alt="Happy customer"
-              />
-              <blockquote className="text-xl md:text-2xl font-medium italic text-slate-800">
-                “Using Enjez was a game-changer. I found a fantastic
-                cleaner in minutes and my apartment has never looked better.
-                Highly recommend for anyone with a busy schedule!”
-              </blockquote>
-              <p className="mt-6 text-base font-bold text-slate-600">
-                Sarah K. - Happy Customer
-              </p>
+        {/* --- Testimonial Section --- */}
+        <section className="py-20 sm:py-24">
+          <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+            <div className="bg-slate-900 rounded-3xl p-8 md:p-16 relative overflow-hidden text-center shadow-2xl">
+              {/* Decorative Blobs */}
+              <div className="absolute top-0 left-0 w-64 h-64 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 -translate-x-1/2 -translate-y-1/2"></div>
+              <div className="absolute bottom-0 right-0 w-64 h-64 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 translate-x-1/2 translate-y-1/2"></div>
+
+              <div className="relative z-10">
+                <div className="flex justify-center mb-6">
+                  <div className="flex gap-1">
+                    {[1, 2, 3, 4, 5].map(i => <Star key={i} className="w-6 h-6 text-yellow-400 fill-yellow-400" />)}
+                  </div>
+                </div>
+                <blockquote className="text-2xl md:text-3xl font-medium text-white leading-relaxed mb-8">
+                  "Using Enjez was a game-changer. I found a fantastic cleaner in minutes and my apartment has never looked better. Highly recommend for anyone with a busy schedule!"
+                </blockquote>
+                <div className="flex flex-col items-center">
+                  <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop" alt="User" className="w-16 h-16 rounded-full border-4 border-slate-700 object-cover mb-3" />
+                  <div className="text-white font-bold text-lg">Sarah Johnson</div>
+                  <div className="text-blue-400 text-sm">Marketing Manager</div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Final CTA */}
-        <section className="w-full py-16">
-          <div className="text-center">
-            <h2 className="text-slate-900 text-3xl font-bold leading-tight tracking-tight px-4 pb-4">
-              Ready to get started?
-            </h2>
-            <p className="text-slate-500 max-w-xl mx-auto pb-8">
-              Join thousands of happy customers and take the hassle out of your
-              to-do list.
-            </p>
-            <button className="flex mx-auto min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-6 bg-blue-600 text-white text-base font-bold leading-normal tracking-wide hover:bg-blue-700 transition-colors">
-              <span className="truncate">Find Your Pro Today</span>
-            </button>
+        {/* --- CTA Section --- */}
+        <section className="pb-20">
+          <div className="mx-auto max-w-7xl px-4 text-center">
+            <h2 className="text-3xl font-black text-slate-900 sm:text-4xl mb-6">Ready to get started?</h2>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button onClick={() => navigate('/services')} className="px-8 py-4 rounded-xl bg-blue-600 text-white font-bold shadow-lg hover:bg-blue-700 hover:shadow-blue-500/30 transition-all">
+                Browse All Services
+              </button>
+
+            </div>
           </div>
         </section>
+
       </main>
 
-      {/* Footer */}
-      <footer className="mt-8 border-t border-slate-200 bg-white">
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
-            <div className="col-span-2 lg:col-span-1">
-              <div className="flex items-center gap-2 mb-4">
-                <span className="material-symbols-outlined text-blue-600 text-2xl">
-                  book_online
-                </span>
-                <h2 className="text-slate-900 text-lg font-bold">
-                  Enjez
-                </h2>
+      {/* --- Footer --- */}
+      <footer className="bg-white border-t border-slate-200 mt-20 pt-16 pb-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+            <div className="col-span-2 md:col-span-1 pr-8">
+              <div className="flex items-center gap-2 mb-4 text-slate-900">
+                {/* Logo SVG reused */}
+                <img src={Logo} alt="Logo" className="h-10 w-10 rounded-xl object-contain" />
+                <span className="font-bold text-xl tracking-tight">EnjezPlatform</span>
               </div>
-              <p className="text-sm text-slate-500">
-                Your one-stop platform for booking trusted local services.
+              <p className="text-slate-500 text-sm leading-relaxed">
+                High-quality services to help your business grow. Find the right professional for your needs today.
               </p>
             </div>
 
             <div>
-              <h3 className="font-bold mb-3 text-slate-900 text-sm">
-                Company
-              </h3>
-              <ul className="space-y-2 text-sm text-slate-500">
-                <li>About Us</li>
-                <li>Careers</li>
-                <li>Press</li>
+              <h3 className="font-bold text-slate-900 mb-4 uppercase text-xs tracking-wider">Company</h3>
+              <ul className="space-y-3 text-sm text-slate-500">
+                <li><Link to="/about" className="hover:text-blue-600 transition-colors">About</Link></li>
+                <li><Link to="/services" className="hover:text-blue-600 transition-colors">Services</Link></li>
+                <li><Link to="/contact" className="hover:text-blue-600 transition-colors">Contact</Link></li>
               </ul>
             </div>
 
             <div>
-              <h3 className="font-bold mb-3 text-slate-900 text-sm">
-                Services
-              </h3>
-              <ul className="space-y-2 text-sm text-slate-500">
-                <li>Home Cleaning</li>
-                <li>Lawn Care</li>
-                <li>Handyman</li>
-                <li>View All</li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-bold mb-3 text-slate-900 text-sm">
-                Support
-              </h3>
-              <ul className="space-y-2 text-sm text-slate-500">
-                <li>Help Center</li>
-                <li>Contact Us</li>
-                <li>FAQ</li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-bold mb-3 text-slate-900 text-sm">Legal</h3>
-              <ul className="space-y-2 text-sm text-slate-500">
-                <li>Terms of Service</li>
-                <li>Privacy Policy</li>
+              <h3 className="font-bold text-slate-900 mb-4 uppercase text-xs tracking-wider">Legal</h3>
+              <ul className="space-y-3 text-sm text-slate-500">
+                <li><Link to="#" className="hover:text-blue-600 transition-colors">Privacy</Link></li>
+                <li><Link to="#" className="hover:text-blue-600 transition-colors">Terms</Link></li>
               </ul>
             </div>
           </div>
-
-          <div className="mt-8 pt-6 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-400">
-            <p>© 2025 Enjez. All rights reserved.</p>
+          <div className="text-center pt-8 border-t border-slate-100">
+            <p className="text-slate-400 text-sm">© 2025 EnjezPlatform. All rights reserved.</p>
           </div>
         </div>
       </footer>

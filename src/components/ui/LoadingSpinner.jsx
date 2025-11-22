@@ -1,3 +1,4 @@
+// LoadingSpinner.jsx
 import React from "react";
 
 export default function LoadingSpinner({ size = "md", text = "Loading..." }) {

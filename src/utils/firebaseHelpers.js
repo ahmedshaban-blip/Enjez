@@ -159,3 +159,8 @@ export const deleteAgentById = (id) =>
 
 
 export const getAllServices = () => getAllDocs("services");
+
+export const getUserBookings = (userId) =>
+  getDocsByField("bookings", "userId", userId);
+
+
