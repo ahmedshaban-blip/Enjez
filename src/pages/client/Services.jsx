@@ -1,11 +1,11 @@
-// src/pages/client/Services.jsx
 import { useEffect, useState } from "react";
 import Navbar from "../../components/layout/Navbar.jsx";
-import ServiceCard from "../../components/common/ServiceCard.jsx";
 import { getAllDocs } from "../../utils/firebaseHelpers.js";
 import RecommendationSection from "../../components/Clients/RecommendationSection.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
-import { Search, Filter, Sparkles } from "lucide-react"; 
+import { Search, Filter, Sparkles } from "lucide-react";
+import ServiceCard from "../../components/common/ServiceCard.jsx"; 
+import Footer from "../../components/layout/Footer.jsx"; 
 
 export default function Services() {
   const [services, setServices] = useState([]);
@@ -17,97 +17,48 @@ export default function Services() {
   const { user } = useAuth();
 
   useEffect(() => {
-    async function load() {
-      try {
-        const [svc, cat] = await Promise.all([
-          getAllDocs("services"),
-          getAllDocs("categories")
-        ]);
-
-        const categoryMap = Object.fromEntries(
-          (cat || []).map(c => [c.id, c.name || ""])
-        );
-
-        const normalized = (svc || []).map(s => ({
-          ...s,
-          _categoryId: s.categoryId || s.category || "",
-          _categoryName: categoryMap[s.categoryId] || s.category || ""
-        }));
-
-        setServices(normalized);
-        setCategories(cat || []);
-      } catch (err) {
-        console.error(err);
-        setError("Failed to load services. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
+    Promise.all([getAllDocs("services"), getAllDocs("categories")])
+      .then(([svc, cat]) => {
+        const catMap = Object.fromEntries(cat.map(c => [c.id, c.name]));
+        setServices(svc.map(s => ({ ...s, _catName: catMap[s.categoryId || s.category] || "" })));
+        setCategories(cat);
+      })
+      .catch(() => setError("Failed to load services."))
+      .finally(() => setLoading(false));
   }, []);
 
-  const filteredServices = services.filter((service) => {
-    const name = (service.name || "").toLowerCase();
-    if (!name.includes(searchTerm.toLowerCase())) return false;
-    if (selectedCategory === "all") return true;
-
-    return [
-      service._categoryId,
-      service._categoryName,
-      service.categoryId,
-      service.category
-    ]
-      .filter(Boolean)
-      .map(String)
-      .includes(selectedCategory);
-  });
+  const filteredServices = services.filter(s => 
+    s.name?.toLowerCase().includes(searchTerm.toLowerCase()) && 
+    (selectedCategory === "all" || [s.categoryId, s.category].includes(selectedCategory))
+  );
 
   return (
-    <div className="bg-slate-50 min-h-screen flex flex-col relative overflow-x-hidden">
-      
-      {/* Blue Background Blobs */}
-      <div className="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-        <div className="absolute top-[-10%] right-[-10%] w-96 h-96 bg-cyan-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
-        <div className="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
-      </div>
-
+    <div className="bg-white text-slate-900 min-h-screen flex flex-col font-sans selection:bg-blue-100 selection:text-blue-900 overflow-x-hidden">
+      <div className="fixed inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-40"></div>
       <Navbar />
 
-      <main className="w-full max-w-7xl px-4 sm:px-6 lg:px-8 mx-auto py-10 flex-1">
-        
-        {user && (user.id || user.uid) && (
-          <div className="mb-12 animate-fade-in-up">
-             <RecommendationSection userId={user.id || user.uid} />
-          </div>
-        )}
+      <main className="w-full max-w-7xl px-4 sm:px-6 lg:px-8 mx-auto pt-12 flex-1">
+        {user?.uid && <div className="mb-20"><RecommendationSection userId={user.uid} /></div>}
 
-        <header className="mb-12 text-center sm:text-left space-y-6">
-          <div className="relative inline-block">
-             <h1 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 mb-2">
-                Discover <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">Professional</span> Services
-             </h1>
-             <div className="absolute -top-6 -right-8 hidden sm:block text-yellow-400 animate-bounce">
-                <Sparkles size={32} fill="currentColor" />
-             </div>
+        <header className="mb-12 mt-5 text-center">
+          <div className="relative inline-block mb-3">
+             <h1 className="text-3xl md:text-4xl font-black tracking-tight">Explore <span className="text-blue-600">Services</span></h1>
+             <Sparkles size={18} className="absolute -top-3 -right-5 text-yellow-400" fill="currentColor" />
           </div>
-          
-          <p className="text-lg text-slate-600 max-w-2xl leading-relaxed">
-            Find trusted experts. High quality, transparent pricing.
-          </p>
+          <p className="text-sm text-slate-500 max-w-lg mx-auto font-medium mb-8">Book trusted professionals in just a few clicks.</p>
 
-          {/* Control Bar */}
-          <div className="mt-8 p-4 bg-white/80 backdrop-blur-xl border border-white/20 shadow-xl shadow-blue-100/50 rounded-2xl flex flex-col sm:flex-row gap-4 items-center justify-between transform transition-all hover:shadow-2xl hover:shadow-blue-100/50">
+            {/* Control Bar */}
+          <div className="mt-8 p-2 bg-white/80 backdrop-blur-xl border border-white/20 shadow-xl shadow-blue-100/50 rounded-2xl flex flex-col sm:flex-row gap-3 items-center justify-between transform transition-all hover:shadow-2xl hover:shadow-blue-100/50">
             
             {/* Search - Blue Focus */}
             <div className="relative w-full sm:w-2/3 group">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Search className="h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
               </div>
               <input
                 type="text"
                 placeholder="What are you looking for?"
-                className="block w-full pl-11 pr-4 py-3.5 bg-slate-50 border-transparent focus:bg-white text-slate-900 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 placeholder:text-slate-400 font-medium"
+                className="block w-full pl-9 pr-3 py-2 bg-slate-50 border-transparent focus:bg-white text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 placeholder:text-slate-400 font-medium"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -115,11 +66,11 @@ export default function Services() {
 
             {/* Filter - Cyan Focus */}
             <div className="relative w-full sm:w-1/3 group">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Filter className="h-5 w-5 text-slate-400 group-focus-within:text-cyan-500 transition-colors" />
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Filter className="h-4 w-4 text-slate-400 group-focus-within:text-cyan-500 transition-colors" />
               </div>
               <select
-                className="block w-full pl-11 pr-10 py-3.5 bg-slate-50 border-transparent focus:bg-white text-slate-700 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-300 font-semibold cursor-pointer appearance-none"
+                className="block w-full pl-9 pr-8 py-2 bg-slate-50 border-transparent focus:bg-white text-slate-700 text-sm rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-300 font-semibold cursor-pointer appearance-none"
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
               >
@@ -130,33 +81,27 @@ export default function Services() {
                   </option>
                 ))}
               </select>
-              <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                <svg className="h-4 w-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                <svg className="h-3 w-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
               </div>
             </div>
           </div>
         </header>
 
-        {loading ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <div className="relative w-20 h-20">
-               <div className="absolute top-0 left-0 w-full h-full border-4 border-blue-200 rounded-full opacity-50"></div>
-               <div className="absolute top-0 left-0 w-full h-full border-4 border-blue-600 rounded-full border-t-transparent animate-spin"></div>
-            </div>
-            <p className="mt-4 text-blue-700 font-medium animate-pulse">Finding best services...</p>
-          </div>
-        ) : error ? (
-             <p>{error}</p>
-        ) : filteredServices.length === 0 ? (
-             <p>No Services</p>
-        ) : (
-          <section className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 pb-20">
-            {filteredServices.map((service) => (
-              <ServiceCard key={service.id} service={service} />
+        {loading ? <div className="flex justify-center py-20"><div className="w-10 h-10 border-4 border-slate-100 border-t-blue-600 rounded-full animate-spin"></div></div> : 
+         error ? <p className="text-center text-red-500 font-bold text-sm py-20">{error}</p> : 
+         filteredServices.length === 0 ? <p className="text-center text-slate-400 font-medium text-sm py-20">No services found.</p> :
+          <section className="grid gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 pb-20">
+            {filteredServices.map((s) => (
+              <ServiceCard key={s.id} service={s} />
             ))}
           </section>
-        )}
+        }
+        
       </main>
+
+      {/* Footer  */}
+      <Footer />
     </div>
   );
 }

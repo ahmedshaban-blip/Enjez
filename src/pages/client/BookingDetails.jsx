@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getDocById } from "../../utils/firebaseHelpers";
 import { useLoading } from "../../context/LoadingContext";
 import Navbar from "../../components/layout/Navbar";
+import Footer from "../../components/layout/Footer"; // Imported Footer
 
 export default function BookingDetails() {
   const { id } = useParams();
@@ -57,9 +58,10 @@ export default function BookingDetails() {
   };
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col font-display bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-200">
       <Navbar />
-      <div className="bg-gray-50 dark:bg-gray-900 min-h-screen py-6 px-4 sm:px-8 md:px-16 lg:px-24 xl:px-40 font-display text-gray-900 dark:text-gray-200">
+      
+      <main className="flex-grow py-6 px-4 sm:px-8 md:px-16 lg:px-24 xl:px-40">
         {/* Breadcrumbs */}
         <div className="flex flex-wrap gap-2 pb-2">
           <button
@@ -257,7 +259,8 @@ export default function BookingDetails() {
             </div>
           </div>
         </div>
-      </div>
-    </>
+      </main>
+      <Footer />
+    </div>
   );
 }

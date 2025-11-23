@@ -5,6 +5,7 @@ import { useAuth } from "../../context/AuthContext.jsx";
 import { useLoading } from "../../context/LoadingContext.jsx";
 import { useModal } from "../../context/ModalContext.jsx";
 import Navbar from "../../components/layout/Navbar.jsx";
+import Footer from "../../components/layout/Footer.jsx"; 
 import { createMessage } from "../../utils/firebaseHelpers.js";
 
 export default function ContactUs() {
@@ -174,6 +175,8 @@ export default function ContactUs() {
           </div>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }

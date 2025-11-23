@@ -1,17 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../../components/layout/Navbar';
-import Footer from '../../components/layout/Footer';
+import Footer from '../../components/layout/Footer'; // Imported Footer
 
 function AboutUsPage() {
-  
-
   const heroStyle = {
     backgroundImage: 'linear-gradient(rgba(10, 37, 64, 0.4) 0%, rgba(10, 37, 64, 0.7) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuAUZgGpO9s4fv7v7kWHKbv_VsXgV_qkaOUjOAfNxdY3Yzqh8bAh3exi31s41FGJiBxAu9svIJjaUWoHTAyzL8flQY75EcCjjvxjdQytiLMqBYoKIGLFb717IIG5jcgBeHYpE248T8JHXrbvQMRFU0Lntvg_DvOA808ez-mBVdTqth_BTBeb07_6e97Y__LFXIDJgkS_ZIuWtzWEEMrAtCZQNJqu0XvzdfkzLhkWGvcol8hMKKnJ47MjbMXNhFxtxfsa4LOk6gry-XZu")',
   };
 
   return (
-    <div className="bg-background-light dark:bg-background-dark font-display text-[#111318] dark:text-gray-200">
+    <div className="bg-background-light dark:bg-background-dark font-display text-[#111318] dark:text-gray-200 flex flex-col min-h-screen">
       <div className="relative flex min-h-screen w-full flex-col group/design-root overflow-x-hidden">
         <div className="layout-container flex h-full grow flex-col">
           
@@ -19,6 +17,7 @@ function AboutUsPage() {
 
           <main className="flex-1">
             
+            {/* Hero Section */}
             <section className="flex flex-1 justify-center py-5">
               <div className="layout-content-container flex flex-col w-full max-w-6xl">
                 <div className="@container px-4">
@@ -161,7 +160,8 @@ function AboutUsPage() {
               </div>
             </section>
 
-            <section className="flex flex-1 justify-center py-16 sm:py-24">
+            {/* Call to Action */}
+            <section className="flex flex-1 justify-center py-16 sm:py-24 mb-4">
               <div className="flex flex-col max-w-6xl flex-1 items-center gap-6 px-4 text-center">
                 <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">Ready to get started?</h2>
                 <p className="max-w-2xl text-lg leading-8 text-gray-600 dark:text-gray-300">
@@ -180,7 +180,8 @@ function AboutUsPage() {
             
           </main>
 
-          <Footer className="bg-blue-950 text-white" />
+          {/* Footer Added Here */}
+          <Footer />
           
         </div>
       </div>
