@@ -10,7 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@paypal/react-paypal-js": "^8.9.2",
     "@supabase/supabase-js": "^2.80.0",
+    "axios": "^1.13.2",
     "firebase": "^12.5.0",
     "framer-motion": "^12.23.24",
     "lucide-react": "^0.554.0",

@@ -1,3 +1,4 @@
+// src/pages/client/Services.jsx
 import { useEffect, useState } from "react";
 import Navbar from "../../components/layout/Navbar.jsx";
 import { getAllDocs } from "../../utils/firebaseHelpers.js";
