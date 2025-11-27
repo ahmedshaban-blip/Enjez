@@ -62,7 +62,7 @@ export default function ProvidersSelector({
 
   return (
     <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/50 p-6">
-      <h3 className="text-lg font-bold mb-4">Link Service Providers</h3>
+      <h3 className="text-lg font-bold mb-4">Link Service Agents</h3>
 
       <div className="relative">
         <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
@@ -72,7 +72,7 @@ export default function ProvidersSelector({
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search by provider name or email..."
+          placeholder="Search by agent name or email..."
           className="pl-10 form-input w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 h-12"
         />
       </div>

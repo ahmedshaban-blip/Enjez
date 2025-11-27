@@ -51,7 +51,7 @@ export const ModalProvider = ({ children }) => {
         
         {/* Title */}
         {modal.title && (
-          <h2 className="text-lg font-semibold text-white mb-3">
+          <h2 className="text-lg font-semibold text-black mb-3">
             {modal.title}
           </h2>
         )}
@@ -64,7 +64,7 @@ export const ModalProvider = ({ children }) => {
                 ? "text-red-400"
                 : modal.type === "success"
                 ? "text-green-300"
-                : "text-gray-200"
+                : "text-gray-800"
             }`}
           >
             {modal.message}

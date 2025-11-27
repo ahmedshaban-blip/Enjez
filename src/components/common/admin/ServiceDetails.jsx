@@ -26,9 +26,8 @@ export default function ServiceDetails({ serviceData, setServiceData }) {
             name="name"
             value={serviceData.name}
             onChange={handleChange}
-            placeholder="e.g. Deep Tissue Massage"
+            placeholder="e.g. Home Cleaning"
             className="form-input w-full rounded-lg border px-4 h-12"
-            required
           />
         </label>
 
@@ -51,7 +50,7 @@ export default function ServiceDetails({ serviceData, setServiceData }) {
               </span>
               <input
                 type="number"
-                min="0"
+                min="1"
                 name="price"
                 value={serviceData.price}
                 onChange={handleChange}
@@ -66,7 +65,7 @@ export default function ServiceDetails({ serviceData, setServiceData }) {
               <input
                 type="number"
                 name="durationValue"
-                min="0"
+                min="1"
                 value={serviceData.durationValue || ""}
                 onChange={(e) =>
                   setServiceData({

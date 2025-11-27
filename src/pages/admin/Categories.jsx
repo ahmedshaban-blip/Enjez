@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import Pagination from "../../components/common/admin/AdminPagination.jsx";
-import { getAllCategories, addCategory, updateCategoryById, deleteCategoryById,} from "../../utils/firebaseHelpers.js";
+import {
+  getAllCategories,
+  addCategory,
+  updateCategoryById,
+  deleteCategoryById,
+} from "../../utils/firebaseHelpers.js";
 import { useLoading } from "../../context/LoadingContext.jsx";
 import { useModal } from "../../context/ModalContext.jsx";
 
@@ -27,7 +32,14 @@ const Categories = () => {
 
   // ===== Add or Edit =====
   const handleSave = async () => {
-    if (!name.trim()) return alert("Enter category name");
+    if (!name.trim()) {
+      return showModal({
+        title: "Missing Name",
+        message: "Please enter a category name.",
+        type: "warning",
+        confirmLabel: "OK",
+      });
+    }
     showLoading(editId ? "Updating category..." : "Adding category...");
     if (editId) {
       await updateCategoryById(editId, name);

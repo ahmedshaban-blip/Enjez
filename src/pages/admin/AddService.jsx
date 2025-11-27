@@ -28,7 +28,7 @@ export default function AddService() {
 
   const [categories, setCategories] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const [resetSearch, setResetSearch] = useState(false)
+  const [resetSearch, setResetSearch] = useState(false);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -44,6 +44,82 @@ export default function AddService() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // VALIDATION
+    if (!serviceData.name.trim()) {
+      showModal({
+        title: "Missing Field",
+        message: "Please enter a service name.",
+        type: "error",
+      });
+      return;
+    }
+
+    if (!serviceData.description.trim()) {
+      showModal({
+        title: "Missing Field",
+        message: "Please enter a service description.",
+        type: "error",
+      });
+      return;
+    }
+
+    if (!serviceData.price || parseFloat(serviceData.price) <= 0) {
+      showModal({
+        title: "Invalid Price",
+        message: "Please enter a valid price greater than 0.",
+        type: "error",
+      });
+      return;
+    }
+
+    if (!serviceData.categoryId) {
+      showModal({
+        title: "Missing Category",
+        message: "Please select a service category.",
+        type: "error",
+      });
+      return;
+    }
+
+    if (
+      !serviceData.durationValue ||
+      parseInt(serviceData.durationValue) <= 0
+    ) {
+      showModal({
+        title: "Invalid Duration",
+        message: "Please enter service duration.",
+        type: "error",
+      });
+      return;
+    }
+
+    if (!serviceData.durationUnit) {
+      showModal({
+        title: "Missing Duration Unit",
+        message: "Please choose duration unit (minutes / hours / days).",
+        type: "error",
+      });
+      return;
+    }
+
+    if (serviceData.agents.length === 0) {
+      showModal({
+        title: "No Providers Linked",
+        message: "Please add at least one service provider.",
+        type: "error",
+      });
+      return;
+    }
+
+    if (selectedFiles.length === 0) {
+      showModal({
+        title: "No Images",
+        message: "Please upload at least one image.",
+        type: "error",
+      });
+      return;
+    }
+
     showLoading();
 
     try {
@@ -76,7 +152,7 @@ export default function AddService() {
       }
 
       showModal({
-        title: "✅ Service Added",
+        title: "Service Added",
         message: `Service "${serviceData.name}" created successfully.`,
         type: "success",
       });
@@ -93,11 +169,11 @@ export default function AddService() {
         images: [],
       });
       setSelectedFiles([]);
-      setResetSearch(prev => !prev);
+      setResetSearch((prev) => !prev);
     } catch (err) {
       console.error(err);
       showModal({
-        title: "❌ Error",
+        title: "Error",
         message: `Failed to add service: ${err.message}`,
         type: "error",
       });

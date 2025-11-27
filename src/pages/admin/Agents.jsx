@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import {
+  doc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+  getDoc,
+} from "firebase/firestore";
 import { db } from "../../config/firebase.js";
 import Pagination from "../../components/common/admin/AdminPagination.jsx";
 import {
@@ -71,9 +77,40 @@ const Agents = () => {
     }
   };
 
+  const validateForm = () => {
+    if (!name.trim()) {
+      showModal({
+        title: "Invalid Name",
+        message: "Please enter the agent name.",
+        type: "error",
+      });
+      return false;
+    }
+
+    if (email.trim() && !/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
+      showModal({
+        title: "Invalid Email",
+        message: "Please enter a valid email address.",
+        type: "error",
+      });
+      return false;
+    }
+
+    if (phone.trim() && !/^[0-9]{8,15}$/.test(phone)) {
+      showModal({
+        title: "Invalid Phone Number",
+        message: "Phone number must be digits only (8–15 digits).",
+        type: "error",
+      });
+      return false;
+    }
+
+    return true;
+  };
+
   // Save agent
   const handleSave = async () => {
-    if (!name.trim()) return alert("Enter agent name");
+    if (!validateForm()) return;
 
     const newServices = agentData.services;
 
@@ -132,20 +169,51 @@ const Agents = () => {
   const confirmDelete = async (id) => {
     showLoading("Deleting agent...");
 
-    // إزالة الـ Agent من كل Service مسجل فيها
     const agent = agents.find((a) => a.id === id);
-    if (agent?.services) {
-      for (const srvId of agent.services) {
+
+    const validServiceIds = (agent?.services || []).filter(
+      (sid) => typeof sid === "string" && sid.trim().length > 0
+    );
+
+    if (validServiceIds.length !== (agent?.services || []).length) {
+      try {
+        const agentRef = doc(db, "agents", id);
+        await updateDoc(agentRef, {
+          services: validServiceIds,
+        });
+      } catch (err) {
+        console.error("Error cleaning agent services:", err);
+      }
+    }
+
+    for (const srvId of validServiceIds) {
+      try {
         const serviceRef = doc(db, "services", srvId);
+        const snap = await getDoc(serviceRef);
+
+        if (!snap.exists()) {
+          console.warn(`Service ${srvId} not found. Skipping.`);
+          continue;
+        }
+
         await updateDoc(serviceRef, {
           agents: arrayRemove(id),
         });
+      } catch (err) {
+        console.error(`Failed to update service ${srvId}`, err);
       }
     }
 
     await deleteAgentById(id);
+
     await loadData();
     hideLoading();
+
+    showModal({
+      title: "Success",
+      message: "Agent deleted successfully.",
+      type: "success",
+    });
   };
 
   const handleDelete = (id) => {

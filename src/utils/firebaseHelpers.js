@@ -1,5 +1,16 @@
 // src/utils/firebaseHelpers.js
-import { collection, addDoc, getDocs, getDoc, doc, updateDoc, deleteDoc, Timestamp, query, where } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  getDoc,
+  doc,
+  updateDoc,
+  deleteDoc,
+  Timestamp,
+  query,
+  where,
+} from "firebase/firestore";
 import { db } from "../config/firebase.js";
 
 // ===== Default structures =====
@@ -15,7 +26,7 @@ export const defaultService = {
   isActive: true,
   reviews: [], // array of review IDs (Another Collection)
   createdAt: Timestamp,
-  updatedAt: Timestamp
+  updatedAt: Timestamp,
 };
 
 export const defaultBooking = {
@@ -30,7 +41,7 @@ export const defaultBooking = {
   status: "pending",
   referenceID: "",
   createdAt: Timestamp,
-  updatedAt: Timestamp
+  updatedAt: Timestamp,
 };
 
 export const defaultAgent = {
@@ -94,7 +105,10 @@ export const updateDocById = async (collectionName, id, data) => {
     await updateDoc(docRef, data);
     return true;
   } catch (error) {
-    console.error(`Error updating document in ${collectionName} with ID ${id}:`, error);
+    console.error(
+      `Error updating document in ${collectionName} with ID ${id}:`,
+      error
+    );
     throw error;
   }
 };
@@ -116,14 +130,17 @@ export const createMessage = (data) => createDoc("messages", data);
 // category
 
 export const getAllCategories = () => getAllDocs("categories");
+
 export const addCategory = (name) =>
-  createDoc("categories", { name: name.trim() });
+  createDoc("categories", {
+    name: name.trim(),
+    createdAt: Timestamp.now(),
+  });
 
 export const updateCategoryById = (id, name) =>
   updateDocById("categories", id, { name });
 
-export const deleteCategoryById = (id) =>
-  deleteDocById("categories", id);
+export const deleteCategoryById = (id) => deleteDocById("categories", id);
 
 // agents
 
@@ -151,16 +168,11 @@ export const addAgent = async (name, email, phone, services = []) => {
   return { id }; // ← الصفحة مستنية ده
 };
 
-export const updateAgentById = (id, data) =>
-  updateDocById("agents", id, data);
+export const updateAgentById = (id, data) => updateDocById("agents", id, data);
 
-export const deleteAgentById = (id) =>
-  deleteDocById("agents", id);
-
+export const deleteAgentById = (id) => deleteDocById("agents", id);
 
 export const getAllServices = () => getAllDocs("services");
 
 export const getUserBookings = (userId) =>
   getDocsByField("bookings", "userId", userId);
-
-
