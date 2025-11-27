@@ -2,8 +2,13 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { db } from "../config/firebase.js";
 import { collection, getDocs, doc, setDoc, limit, query } from "firebase/firestore";
 
-// 🔴 IMPORTANT: Replace this with your valid Gemini API Key
-const API_KEY = "AIzaSyAH2aHhrD3HmIzwNBijnSqSIDPKWR4Kbow"; 
+//  Read the API Key from the .env file
+// Ensure you have VITE_GEMINI_API_KEY=your_key in your .env file
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+
+if (!API_KEY) {
+  console.error("Error: VITE_GEMINI_API_KEY is missing. Please check your .env file.");
+}
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 const embeddingModel = genAI.getGenerativeModel({ model: "text-embedding-004" });
@@ -109,7 +114,7 @@ export async function queryAI(userQuery, topK = 3) {
       const prompt = `
       You are a smart assistant for the "Enjez" platform. Use the following service information to answer the customer's question.
       
-      Top Services:
+      Available Services:
       ${contextText}
       
       Customer Question: ${userQuery}
@@ -181,7 +186,7 @@ export async function generateServiceEmbeddings() {
 }
 
 /**
- * ✅ NEW FUNCTION: Auto-Initialize Chatbot
+ *  Auto-Initialize Chatbot
  * Checks if the 'chatbot' collection is empty. If so, it runs the embedding generation automatically.
  */
 export async function checkAndInitializeChatbot() {
