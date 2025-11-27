@@ -114,7 +114,11 @@ export async function queryAI(userQuery, topK = 3) {
       const prompt = `
       You are a smart assistant for the "Enjez" platform. Use the following service information to answer the customer's question.
       
+<<<<<<< HEAD
       Available Services:
+=======
+      Top Services:
+>>>>>>> main
       ${contextText}
       
       Customer Question: ${userQuery}
@@ -186,7 +190,11 @@ export async function generateServiceEmbeddings() {
 }
 
 /**
+<<<<<<< HEAD
  *  Auto-Initialize Chatbot
+=======
+ * ✅ NEW FUNCTION: Auto-Initialize Chatbot
+>>>>>>> main
  * Checks if the 'chatbot' collection is empty. If so, it runs the embedding generation automatically.
  */
 export async function checkAndInitializeChatbot() {
