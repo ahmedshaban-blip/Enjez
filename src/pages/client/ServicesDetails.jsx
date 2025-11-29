@@ -230,7 +230,7 @@ const ServiceDetailsPage = () => {
                         <span className="text-4xl font-black text-slate-900">
                           {service?.price ? Number(service.price).toLocaleString() : 'N/A'}
                         </span>
-                        <span className="text-lg font-bold text-slate-500">EGP</span>
+                        <span className="text-lg font-bold text-slate-500">$</span>
                       </div>
                     </div>
 

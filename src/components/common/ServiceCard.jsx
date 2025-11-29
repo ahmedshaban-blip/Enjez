@@ -11,7 +11,7 @@ export default function ServiceCard({ service }) {
       : "https://via.placeholder.com/400";
 
   const displayName = name || "Untitled service";
-  const displayPrice = price ? `${price} EGP` : "Ask";
+  const displayPrice = price ? `${price} $` : "Ask";
   const displayDesc = description || "No description.";
 
   const handleClick = () => navigate(`/services/${id}`);
@@ -48,7 +48,7 @@ export default function ServiceCard({ service }) {
           </div>
         </div>
         
-        <p className="text-[12px] text-slate-500 line-clamp-2 mb-3 h-7 leading-relaxed font-medium">
+        <p className="text-[12px] text-slate-500 line-clamp-2 mb-3 h-9 leading-relaxed font-medium">
           {displayDesc}
         </p>
         

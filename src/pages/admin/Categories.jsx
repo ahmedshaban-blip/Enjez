@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import Pagination from "../../components/common/admin/AdminPagination.jsx";
 import {
-  getAllCategories,
   addCategory,
   updateCategoryById,
   deleteCategoryById,
+  getAllCategoriesWithCount
 } from "../../utils/firebaseHelpers.js";
 import { useLoading } from "../../context/LoadingContext.jsx";
 import { useModal } from "../../context/ModalContext.jsx";
@@ -25,7 +25,7 @@ const Categories = () => {
 
   const loadData = async () => {
     showLoading("Loading Categories...");
-    const data = await getAllCategories();
+    const data = await getAllCategoriesWithCount();
     setCategories(data);
     hideLoading();
   };
@@ -125,6 +125,7 @@ const Categories = () => {
           <thead className="bg-gray-100 dark:bg-gray-800">
             <tr>
               <th className="px-6 py-3">Name</th>
+              <th className="px-6 py-3">Services</th>
               <th className="px-6 py-3">Created</th>
               <th className="px-6 py-3">Actions</th>
             </tr>
@@ -144,6 +145,8 @@ const Categories = () => {
                   className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
                 >
                   <td className="px-6 py-4">{cat.name}</td>
+
+                  <td className="px-6 py-4">{cat.servicesCount}</td>
 
                   <td className="px-6 py-4">
                     {cat.createdAt?.seconds
