@@ -15,7 +15,7 @@ export const PageHeader = () => {
       </div>
 
       <button
-        onClick={() => navigate("/admin/add-service")}
+        onClick={() => navigate("/admin/form-service")}
         className="w-full md:w-auto flex items-center justify-center gap-2 rounded-xl h-14 px-6 bg-blue-600 text-white font-bold hover:bg-blue-700 focus:ring-2 focus:ring-blue-400"
       >
         <span className="material-symbols-outlined text-2xl">add</span>
