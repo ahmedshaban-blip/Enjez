@@ -1,5 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { formatPrice, formatDuration, formatCreatedAt } from "../../../utils/helpers.js";
+import {
+  formatPrice,
+  formatDuration,
+  formatCreatedAt,
+} from "../../../utils/helpers.js";
 
 export const ServicesTable = ({ services, error, handleDelete }) => {
   const navigate = useNavigate();
@@ -35,20 +39,30 @@ export const ServicesTable = ({ services, error, handleDelete }) => {
             service.isActive === "Pending"
               ? "pending"
               : service.isActive
-              ? "active"
-              : "inactive";
+                ? "active"
+                : "inactive";
 
           const stateClass =
             isActive === "pending"
               ? "bg-yellow-100 text-yellow-800"
               : isActive === "active"
-              ? "bg-green-100 text-green-800"
-              : "bg-gray-100 text-gray-800";
+                ? "bg-green-100 text-green-800"
+                : "bg-gray-100 text-gray-800";
 
-          const imageSrc =
-            (Array.isArray(service.images) && service.images[0]) ||
-            service.imageUrl ||
-            null;
+          const imageSrc = (() => {
+            if (Array.isArray(service.images) && service.images.length > 0) {
+              // لو العنصر array
+              const firstImage = service.images[0];
+              // لو العنصر object فيه url
+              if (typeof firstImage === "object" && firstImage.url) {
+                return firstImage.url;
+              }
+              // لو العنصر string (الصور القديمة)
+              return firstImage;
+            }
+            // fallback للصورة القديمة
+            return service.imageUrl || null;
+          })();
 
           return (
             <tr
@@ -91,17 +105,15 @@ export const ServicesTable = ({ services, error, handleDelete }) => {
                   {isActive === "pending"
                     ? "Pending"
                     : isActive === "active"
-                    ? "Active"
-                    : "Inactive"}
+                      ? "Active"
+                      : "Inactive"}
                 </span>
               </td>
 
               <td className="px-6 py-4">
                 <div className="flex items-center gap-3">
                   <button
-                    onClick={() =>
-                      navigate(`/admin/edit-service/${service.id}`)
-                    }
+                    onClick={() => navigate(`/admin/form-service/${service.id}`)}
                     className="text-gray-500 hover:text-blue-600"
                   >
                     <span className="material-symbols-outlined">edit</span>

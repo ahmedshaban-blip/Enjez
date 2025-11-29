@@ -29,7 +29,6 @@ import Clients from "./pages/admin/Clients.jsx";
 import AdminServices from "./pages/admin/Services.jsx";
 import Reports from "./pages/admin/Reports.jsx";
 import Settings from "./pages/admin/Settings.jsx";
-import AddService from "./pages/admin/AddService.jsx";
 import NotFound from './pages/NotFound.jsx';
 import Notifications from './pages/admin/Notifications.jsx';
 import ResetPassword from './pages/auth/ResetPassword.jsx';
@@ -39,6 +38,7 @@ import AboutUsPage from './pages/client/About.jsx';
 import Categories from './pages/admin/Categories.jsx';
 import Agents from './pages/admin/Agents.jsx';
 import EditService from './pages/admin/EditService.jsx';
+import ServiceForm from './pages/admin/ServiceForm.jsx';
 
 function App() {
   return (
@@ -76,8 +76,8 @@ function App() {
             <Route path="services" element={<AdminServices />} />
             <Route path="reports" element={<Reports />} />
             <Route path="settings" element={<Settings />} />
-            <Route path="add-service" element={<AddService />} />
-            <Route path="edit-service/:id" element={<EditService />} />
+            <Route path="form-service" element={<ServiceForm />} />
+            <Route path="form-service/:id" element={<ServiceForm />} />
             <Route path="notifications" element={<Notifications />} />
             <Route path="categories" element={<Categories />} />
             <Route path="agents" element={<Agents />} />
