@@ -173,6 +173,37 @@ export const updateAgentById = (id, data) => updateDocById("agents", id, data);
 export const deleteAgentById = (id) => deleteDocById("agents", id);
 
 export const getAllServices = () => getAllDocs("services");
+export const deleteServiceById = (id) => deleteDocById("services", id);
+
 
 export const getUserBookings = (userId) =>
   getDocsByField("bookings", "userId", userId);
+
+// 
+export const getServicesCountByCategory = async (categoryId) => {
+  const q = query(
+    collection(db, "services"),
+    where("categoryId", "==", categoryId)
+  );
+  const snapshot = await getDocs(q);
+  return snapshot.size;
+};
+
+//
+export const getAllCategoriesWithCount = async () => {
+  const catsSnap = await getDocs(collection(db, "categories"));
+  const categories = [];
+
+  for (let doc of catsSnap.docs) {
+    const data = doc.data();
+    const count = await getServicesCountByCategory(doc.id);
+
+    categories.push({
+      id: doc.id,
+      ...data,
+      servicesCount: count,
+    });
+  }
+
+  return categories;
+};

@@ -128,7 +128,7 @@ const BookingContent = () => {
         {/* تم إزالة الـ SideNavBar (aside) من هنا */}
 
         {/* Main Content */}
-        <main className="flex-1 p-8"> {/* أصبحت هي العنصر الأساسي */}
+        <main className="flex-1"> {/* أصبحت هي العنصر الأساسي */}
           <div className="mx-auto max-w-7xl">
             {/* PageHeading */}
             <div className="flex flex-wrap items-center justify-between gap-4">
@@ -190,12 +190,12 @@ const BookingContent = () => {
                 <table className="w-full min-w-max text-left">
                   <thead>
                     <tr className="bg-gray-50 dark:bg-gray-900/50">
-                      <th className="p-4 w-12 text-center">
+                      {/* <th className="p-4 w-12 text-center">
                         <input
                           className="h-5 w-5 rounded border-gray-300 dark:border-gray-600 bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-2 focus:ring-offset-0 focus:ring-primary/50 dark:focus:ring-offset-gray-800"
                           type="checkbox"
                         />
-                      </th>
+                      </th> */}
                       <th className="p-4 text-sm font-semibold text-gray-600 dark:text-gray-300">
                         Client Name
                       </th>
@@ -231,15 +231,15 @@ const BookingContent = () => {
                       ) : (
                         filterBookings().map((b) => (
                           <tr key={b.id} className="hover:bg-gray-50 dark:hover:bg-gray-900/50">
-                            <td className="p-4 w-12 text-center">
+                            {/* <td className="p-4 w-12 text-center">
                               <input
                                 className="h-5 w-5 rounded border-gray-300 dark:border-gray-600 bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-2 focus:ring-offset-0 focus:ring-primary/50 dark:focus:ring-offset-gray-800"
                                 type="checkbox"
                               />
-                            </td>
+                            </td> */}
                             <td className="p-4 text-sm whitespace-nowrap">
                               <div className="flex items-center gap-2">
-                                <div className="h-2 w-2 rounded-full bg-primary"></div>
+                                {/* <div className="h-2 w-2 rounded-full bg-primary"></div> */}
                                 {b.username || 'Client'}
                               </div>
                             </td>

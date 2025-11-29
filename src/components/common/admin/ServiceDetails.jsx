@@ -77,7 +77,7 @@ export default function ServiceDetails({ serviceData, setServiceData }) {
               />
               <select
                 name="durationUnit"
-                value={serviceData.durationUnit || "minutes"}
+                value={serviceData.durationUnit || "select unit"}
                 onChange={(e) =>
                   setServiceData({
                     ...serviceData,
@@ -86,6 +86,7 @@ export default function ServiceDetails({ serviceData, setServiceData }) {
                 }
                 className="form-select rounded-lg border h-12 px-3"
               >
+                <option value="">Select unit</option>
                 <option value="minutes">Minutes</option>
                 <option value="hours">Hours</option>
                 <option value="days">Days</option>
