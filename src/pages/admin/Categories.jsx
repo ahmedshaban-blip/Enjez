@@ -81,7 +81,7 @@ const Categories = () => {
   const total = categories.length;
 
   return (
-    <div className="px-6 py-4 mx-auto">
+    <div className="">
       <h1 className="text-3xl font-bold mb-6">Manage Categories</h1>
 
       {/* ===== Add / Edit Form ===== */}
@@ -180,14 +180,13 @@ const Categories = () => {
             )}
           </tbody>
         </table>
-      </div>
-
-      <Pagination
+        <Pagination
         total={total}
         perPage={perPage}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
       />
+      </div>  
     </div>
   );
 };

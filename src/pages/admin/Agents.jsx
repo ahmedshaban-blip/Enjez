@@ -231,7 +231,7 @@ const Agents = () => {
   const paginated = agents.slice(start, start + perPage);
 
   return (
-    <div className="px-6 py-2 mx-auto">
+    <div >
       <h1 className="text-3xl font-bold mb-6">Manage Agents</h1>
 
       {/* FORM */}
@@ -318,7 +318,7 @@ const Agents = () => {
                 const serviceNames =
                   agent.services?.map(
                     (srvId) =>
-                      services.find((s) => s.id === srvId)?.name || "Unknown"
+                      services.find((s) => s.id === srvId)?.name || ""
                   ) || [];
 
                 return (
@@ -371,14 +371,13 @@ const Agents = () => {
             )}
           </tbody>
         </table>
-      </div>
-
-      <Pagination
+        <Pagination
         total={agents.length}
         perPage={perPage}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
       />
+      </div>  
     </div>
   );
 };

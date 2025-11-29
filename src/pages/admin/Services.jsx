@@ -102,7 +102,7 @@ const ManageServicesPage = () => {
   }, [searchTerm, categoryFilter]);
 
   return (
-    <div className="relative flex min-h-screen w-full overflow-hidden">
+    <div className="relative flex w-full overflow-hidden">
       <MainContent
         services={paginated}
         error={error}

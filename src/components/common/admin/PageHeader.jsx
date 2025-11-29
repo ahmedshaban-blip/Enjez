@@ -4,7 +4,7 @@ export const PageHeader = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
       <div className="flex flex-col gap-2">
         <p className="text-gray-900 dark:text-white text-3xl md:text-4xl font-black">
           Manage Services
