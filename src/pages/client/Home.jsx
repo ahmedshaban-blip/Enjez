@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/layout/Navbar.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
 import useBookingViewedNotifier from "../../hooks/useBookingViewedNotifier.js";
 import { getAllServices } from "../../utils/firebaseHelpers.js";
 import { Search, ArrowRight, Star, ShieldCheck, Clock } from "lucide-react";
 import Footer from "../../components/layout/Footer.jsx";
+import PopularServices from "../../components/common/PopularServices.jsx";
 
 export default function Home() {
   const { currentUser } = useAuth();
@@ -14,10 +15,16 @@ export default function Home() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [featuredServices, setFeaturedServices] = useState([]);
+  const [loadingServices, setLoadingServices] = useState(true);
 
   useEffect(() => {
-    // Fetches 5 services to match the row layout in the picture
-    getAllServices().then(data => setFeaturedServices(data.slice(0, 5))).catch(console.error);
+    setLoadingServices(true);
+    getAllServices()
+      .then((data) => {
+        setFeaturedServices(data.slice(0, 5));
+      })
+      .catch(console.error)
+      .finally(() => setLoadingServices(false));
   }, []);
 
   const handleSearch = (e) => {
@@ -25,7 +32,6 @@ export default function Home() {
     navigate(`/services?search=${searchTerm}`);
   };
 
-  // Data arrays for cleaner rendering (Refactoring)
   const features = [
     { Icon: ShieldCheck, title: "Verified Professionals", color: "blue", rotate: "rotate-3", desc: "Every pro is screened and rated." },
     { Icon: Clock, title: "Save Time", color: "purple", rotate: "-rotate-3", desc: "Book in seconds. We handle the rest." },
@@ -38,7 +44,6 @@ export default function Home() {
       <main className="flex-grow">
         {/* --- Hero Section --- */}
         <div className="relative bg-slate-900">
-          {/* Background Image with Overlay */}
           <div className="absolute inset-0 overflow-hidden">
             <img
               src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f?q=80&w=2070&auto=format&fit=crop"
@@ -48,9 +53,7 @@ export default function Home() {
             <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-slate-900/60 to-slate-900/90" />
           </div>
 
-          {/* Content Container  */}
           <div className="relative mx-auto max-w-7xl px-4 py-44 sm:px-6 lg:px-8 text-center">
-
             <h1 className="text-4xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl mb-6">
               <span className="block">Find the perfect</span>
               <span className="block text-blue-500">professional for you</span>
@@ -60,7 +63,6 @@ export default function Home() {
               Get your to-do list done with trusted professionals. From home cleaning to repairs, we've got you covered.
             </p>
 
-            {/* Buttons */}
             <div className="flex justify-center gap-4 mb-12">
               <button onClick={() => navigate('/services')} className="px-8 py-3 rounded-full bg-blue-600 text-white font-bold hover:bg-blue-700 shadow-lg transition-all">
                 Book a Service
@@ -69,15 +71,13 @@ export default function Home() {
                 How it works
               </button>
             </div>
-
           </div>
 
-          {/* --- Search Bar (Positioned Absolute at Bottom Edge) --- */}
           <div className="absolute bottom-0 left-0 right-0 translate-y-1/2 px-4 z-20">
             <div className="mx-auto max-w-3xl bg-white rounded-2xl shadow-2xl pr-4 py-1 border border-slate-100 text-left">
               <form onSubmit={handleSearch} className="flex items-center gap-2">
                 <div className="flex-1 flex items-center px-4 py-2">
-                  <Search className="w-5 h-5 text-blue-500 mr-3 mt-4" /> {/* Adjusted margin/alignment */}
+                  <Search className="w-5 h-5 text-blue-500 mr-3 mt-4" />
                   <div className="flex-1">
                     <label className="block text-xs mb-2 font-bold text-slate-500 uppercase">Service</label>
                     <input
@@ -98,35 +98,7 @@ export default function Home() {
         </div>
 
         {/* --- Popular Services --- */}
-        <section className="pt-40 pb-20">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-black text-slate-900 sm:text-4xl">Popular Services</h2>
-              <p className="mt-4 text-lg text-slate-600">Explore our most requested services.</p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-              {featuredServices.length === 0 ? (
-                <div className="col-span-full text-center text-slate-500">Loading...</div>
-              ) : (
-                featuredServices.map((s) => (
-                  <div 
-                    key={s.id} 
-                    // Updated: Navigate to details page using ID
-                    onClick={() => navigate(`/services/${s.id}`)} 
-                    className="group relative aspect-[5/6] overflow-hidden rounded-2xl cursor-pointer shadow-md hover:shadow-xl transition-all hover:-translate-y-1"
-                  >
-                    <img src={s.images?.[0] || "https://via.placeholder.com/400"} alt={s.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90" />
-                    <div className="absolute bottom-0 p-5 w-full">
-                      <h3 className="text-white font-bold text-xl mb-1">{s.name}</h3>
-                      <p className="text-slate-300 text-sm flex justify-between"><span>From ${s.price}</span> <ArrowRight className="w-4 h-4" /></p>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </section>
+        <PopularServices services={featuredServices} loading={loadingServices} />
 
         {/* --- Features --- */}
         <section className="bg-slate-50 py-20 border-y border-slate-200">
@@ -153,7 +125,6 @@ export default function Home() {
         <section className="py-24">
           <div className="mx-auto max-w-4xl px-4">
             <div className="bg-slate-900 rounded-3xl p-10 text-center shadow-2xl relative overflow-hidden">
-              {/* Blobs */}
               <div className="absolute top-0 left-0 w-40 h-40 bg-blue-500 rounded-full blur-3xl opacity-20" />
               <div className="absolute bottom-0 right-0 w-40 h-40 bg-purple-500 rounded-full blur-3xl opacity-20" />
 
@@ -177,7 +148,6 @@ export default function Home() {
         </section>
       </main>
 
-      {/* --- Footer  --- */}
       <Footer />
     </div>
   );
