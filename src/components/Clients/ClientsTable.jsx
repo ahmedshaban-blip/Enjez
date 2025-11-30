@@ -12,13 +12,13 @@ export default function ClientsTable({
         <table className="w-full text-sm text-left">
           <thead className="bg-slate-50 text-xs text-slate-500 uppercase tracking-wide">
             <tr>
-              <th scope="col" className="p-4">
+              {/* <th scope="col" className="p-4">
                 <input
                   type="checkbox"
                   className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                   disabled
                 />
-              </th>
+              </th> */}
               <th scope="col" className="px-6 py-3 font-medium">
                 Client Name
               </th>

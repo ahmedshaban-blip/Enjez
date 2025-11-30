@@ -6,9 +6,29 @@ export default function ServiceCard({ service }) {
   const { name, description, images, price, id } = service || {};
   const categoryName = service?._catName || service?._categoryName || service?.category || "";
 
-  const imageUrl = Array.isArray(images) && images.length > 0
-      ? images[0]
-      : "https://via.placeholder.com/400";
+  // =========================
+  //  FIX IMAGES HANDLING
+  // =========================
+
+  let imageUrl = "https://via.placeholder.com/400";
+
+  if (Array.isArray(images) && images.length > 0) {
+    // Case 1: array of strings
+    if (typeof images[0] === "string") {
+      imageUrl = images[0];
+    }
+    // Case 2: array of {url, path}
+    else if (typeof images[0] === "object" && images[0]?.url) {
+      imageUrl = images[0].url;
+    }
+  }
+
+  // Case 3: single object {url, path}
+  else if (images && typeof images === "object" && images.url) {
+    imageUrl = images.url;
+  }
+
+  // =========================
 
   const displayName = name || "Untitled service";
   const displayPrice = price ? `${price} $` : "Ask";
@@ -22,11 +42,17 @@ export default function ServiceCard({ service }) {
       className="group bg-white rounded-2xl border border-slate-100 cursor-pointer shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 hover:-translate-y-1 overflow-hidden"
     >
       <div className="relative h-48 overflow-hidden bg-slate-100">
-         <img src={imageUrl} alt={displayName} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+         <img 
+           src={imageUrl} 
+           alt={displayName}
+           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+         />
          
          {/* Overlay Button */}
          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-            <span className="bg-white/20 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1 rounded-full border border-white/30 translate-y-4 group-hover:translate-y-0 transition-transform">View</span>
+            <span className="bg-white/20 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1 rounded-full border border-white/30 translate-y-4 group-hover:translate-y-0 transition-transform">
+              View
+            </span>
          </div>
          
          {/* Category Badge */}
@@ -57,6 +83,7 @@ export default function ServiceCard({ service }) {
             <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Price</span>
             <span className="text-md font-black text-slate-800">{displayPrice}</span>
           </div>
+
           {/* Blue Button */}
           <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-md shadow-blue-200 hover:bg-blue-700 transition-all">
             <ArrowRight className="w-4 h-4" />

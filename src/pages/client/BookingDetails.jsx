@@ -60,7 +60,7 @@ export default function BookingDetails() {
   return (
     <div className="min-h-screen flex flex-col font-display bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-200">
       <Navbar />
-      
+
       <main className="flex-grow py-6 px-4 sm:px-8 md:px-16 lg:px-24 xl:px-40">
         {/* Breadcrumbs */}
         <div className="flex flex-wrap gap-2 pb-2">
@@ -142,8 +142,108 @@ export default function BookingDetails() {
             </div>
           </div>
           {/* Right Column: Progress Tracker & Actions */}
+
+          {/* Booking Progress */}
           <div className="lg:col-span-1 flex flex-col gap-8">
             <div className="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+              <h2 className="text-xl font-bold mb-6">Booking Progress</h2>
+
+              <div className="grid grid-cols-[32px_1fr] gap-x-4">
+                {[
+                  {
+                    key: "pending",
+                    title: "Request Received",
+                    date: booking.createdAt?.toDate()?.toDateString(),
+                    color: "bg-green-500",
+                    icon: "check",
+                  },
+                  {
+                    key: "confirmed",
+                    title: "Booking Confirmed",
+                    date: booking.confirmedAt
+                      ? booking.confirmedAt.toDate().toDateString()
+                      : "-",
+                    color: "bg-blue-500",
+                    icon: "check",
+                  },
+                  {
+                    key: "in_progress",
+                    title: "Service In Progress",
+                    date: booking.inProgressAt
+                      ? booking.inProgressAt.toDate().toDateString()
+                      : "-",
+                    color: "bg-orange-500", 
+                    icon: "construction",
+                  },
+                  {
+                    key: "completed",
+                    title: "Completed",
+                    date: booking.completedAt
+                      ? booking.completedAt.toDate().toDateString()
+                      : "-",
+                    color: "bg-purple-600",
+                    icon: "done_all",
+                  },
+                ].map((step, idx, arr) => {
+                  // Determine if this step is active or completed
+                  const order = [
+                    "pending",
+                    "confirmed",
+                    "in_progress",
+                    "completed",
+                  ];
+                  const currentIndex = order.indexOf(booking.status);
+                  const stepIndex = order.indexOf(step.key);
+
+                  const isActive = stepIndex <= currentIndex;
+
+                  const circleStyle = isActive
+                    ? `${step.color} text-white`
+                    : "bg-gray-300 text-gray-600 dark:bg-gray-600 dark:text-gray-400";
+
+                  return (
+                    <React.Fragment key={step.key}>
+                      <div className="flex flex-col items-center gap-1">
+                        <div
+                          className={`flex items-center justify-center rounded-full h-8 w-8 ${circleStyle}`}
+                        >
+                          <span className="material-symbols-outlined text-base">
+                            {step.icon}
+                          </span>
+                        </div>
+
+                        {idx < arr.length - 1 && (
+                          <div
+                            className={`w-0.5 h-full grow ${
+                              isActive
+                                ? step.color
+                                : "bg-gray-300 dark:bg-gray-600"
+                            }`}
+                          ></div>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col pb-6">
+                        <p
+                          className={
+                            isActive
+                              ? "text-gray-900 dark:text-gray-200"
+                              : "text-gray-500 dark:text-gray-400"
+                          }
+                        >
+                          {step.title}
+                        </p>
+                        <p className="text-gray-500 dark:text-gray-400 text-sm">
+                          {step.date}
+                        </p>
+                      </div>
+                    </React.Fragment>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/*<div className="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
               <h2 className="text-xl font-bold mb-6">Booking Progress</h2>
 
               <div className="grid grid-cols-[32px_1fr] gap-x-4">
@@ -241,9 +341,9 @@ export default function BookingDetails() {
                   );
                 })}
               </div>
-            </div>
+            </div> */}
             {/* Action Buttons */}
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 flex flex-col gap-3">
+            {/* <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 flex flex-col gap-3">
               <button className="w-full h-11 flex items-center justify-center px-6 text-base font-medium rounded-lg bg-blue-500 text-white hover:bg-blue-600">
                 Reschedule
               </button>
@@ -256,7 +356,7 @@ export default function BookingDetails() {
               >
                 Need help? Contact Us
               </a>
-            </div>
+            </div> */}
           </div>
         </div>
       </main>

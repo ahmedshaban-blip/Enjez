@@ -13,12 +13,12 @@ export default function ClientRow({ client, onDeleteClick }) {
 
   return (
     <tr className="border-t border-slate-100 hover:bg-slate-50">
-      <td className="w-4 p-4">
+      {/* <td className="w-4 p-4">
         <input
           type="checkbox"
           className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
         />
-      </td>
+      </td> */}
       <td className="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">
         {fullName}
       </td>

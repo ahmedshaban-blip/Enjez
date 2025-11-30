@@ -122,7 +122,10 @@ export const deleteDocById = async (collectionName, id) => {
 // ========== Specific create functions ==========
 export const createUser = (data) => createDoc("users", data);
 export const createService = (data) => createDoc("services", data);
-export const createBooking = (data) => createDoc("bookings", data);
+export const createBooking = async (data) => {
+  const docRef = await addDoc(collection(db, "bookings"), data);
+  return docRef.id; 
+};
 export const createAgent = (data) => createDoc("agents", data);
 export const createCategory = (data) => createDoc("categories", data);
 export const createMessage = (data) => createDoc("messages", data);

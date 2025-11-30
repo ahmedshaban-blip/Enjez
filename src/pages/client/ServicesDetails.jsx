@@ -28,16 +28,32 @@ const ServiceDetailsPage = () => {
         return;
       }
 
-      try {
+  try {
         const serviceRef = doc(db, 'services', id);
         const serviceDoc = await getDoc(serviceRef);
 
         if (serviceDoc.exists()) {
-          const serviceData = {
+          const data = serviceDoc.data();
+
+          // ---------- NORMALIZE IMAGES HERE ----------
+          let normalizedImages = [];
+
+          if (Array.isArray(data.images)) {
+            normalizedImages = data.images.map((img) =>
+              typeof img === "string" ? img : img.url
+            );
+          } else if (typeof data.images === "object" && data.images !== null) {
+            normalizedImages = [data.images.url || ""];
+          } else {
+            normalizedImages = [];
+          }
+
+          setService({
             id: serviceDoc.id,
-            ...serviceDoc.data(),
-          };
-          setService(serviceData);
+            ...data,
+            images: normalizedImages
+          });
+
         } else {
           setError('Service not found');
         }
@@ -51,6 +67,7 @@ const ServiceDetailsPage = () => {
 
     fetchService();
   }, [id]);
+
 
   const handleBookClick = () => {
     const serviceId = service?.id;
@@ -89,9 +106,13 @@ const ServiceDetailsPage = () => {
     );
   }
 
-  const heroImage = service?.images && service.images.length > 0
-    ? service.images[0]
-    : "https://images.pexels.com/photos/37347/repair-cell-phone-repairing-fix.jpg";
+  // const heroImage = service?.images && service.images.length > 0
+  //   ? service.images[0]
+  //   : "https://images.pexels.com/photos/37347/repair-cell-phone-repairing-fix.jpg";
+  const heroImage =
+    service?.images?.length > 0
+      ? service.images[0]
+      : "https://images.pexels.com/photos/37347/repair-cell-phone-repairing-fix.jpg";
 
   return (
     <div className="bg-slate-50 min-h-screen font-sans text-slate-900 flex flex-col">
@@ -174,20 +195,17 @@ const ServiceDetailsPage = () => {
               </div>
 
               {/* Gallery Grid */}
-              {service?.images && service.images.length > 0 && (
+              {service?.images?.length > 0 && (
                 <div>
-                  <h2 className="text-2xl font-bold tracking-tight text-slate-900 mb-6">
-                    Gallery
-                  </h2>
+                  <h2 className="text-2xl font-bold mb-6">Gallery</h2>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                    {service.images.map((image, index) => (
-                      <div key={index} className="group relative aspect-square overflow-hidden rounded-2xl bg-slate-100 cursor-pointer shadow-sm hover:shadow-md transition-all">
+                    {service.images.map((img, i) => (
+                      <div key={i} className="relative aspect-square overflow-hidden rounded-2xl bg-slate-100 group">
                         <img
-                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                          src={image}
-                          alt={`${service.name} ${index + 1}`}
+                          src={img}
+                          alt={`Service ${i}`}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         />
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors"></div>
                       </div>
                     ))}
                   </div>
