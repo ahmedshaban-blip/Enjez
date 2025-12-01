@@ -20,6 +20,7 @@ import MyBookings from "./pages/client/MyBookings.jsx";
 import BookingDetails from "./pages/client/BookingDetails.jsx";
 import ClientNotifications from "./pages/client/Notifications.jsx";
 import HowItWorks from "./pages/client/HowItWorks.jsx";
+import Profile from "./pages/client/Profile.jsx";
 
 // Admin Pages
 import AdminLayout from "./pages/admin/AdminLayout.jsx";
@@ -39,10 +40,12 @@ import Categories from './pages/admin/Categories.jsx';
 import Agents from './pages/admin/Agents.jsx';
 import EditService from './pages/admin/EditService.jsx';
 import ServiceForm from './pages/admin/ServiceForm.jsx';
+import Chatbot from './components/common/client/Chatbot.jsx';
 
 function App() {
   return (
     <BrowserRouter>
+      <Chatbot />
       <Routes>
         <Route path="/" element={<Navigate to="/home" replace />} />
 
@@ -65,6 +68,7 @@ function App() {
           <Route path="/booking/details/:id" element={<BookingDetails />} />
           <Route path="/notifications" element={<ClientNotifications />} />
           <Route path="/contact" element={<ContactUs />} />
+          <Route path="/profile" element={<Profile />} />
         </Route>
 
         <Route element={<AdminRoute />}>
