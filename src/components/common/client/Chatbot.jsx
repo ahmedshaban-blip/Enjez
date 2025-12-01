@@ -15,7 +15,7 @@ export default function Chatbot() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
-  
+
   // Refs for click-outside detection
   const panelRef = useRef(null);
   const buttonRef = useRef(null);
@@ -25,9 +25,9 @@ export default function Chatbot() {
     const initBot = async () => { if ((await checkAndInitializeChatbot()).status === "processed") console.log("Chatbot initialized."); };
     initBot(); // Run auto-init on mount
 
-    const onClick = (e) => { 
+    const onClick = (e) => {
       // Close panel if clicked outside both panel and toggle button
-      if (!panelRef.current?.contains(e.target) && !buttonRef.current?.contains(e.target)) setOpen(false); 
+      if (!panelRef.current?.contains(e.target) && !buttonRef.current?.contains(e.target)) setOpen(false);
     };
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
@@ -37,7 +37,7 @@ export default function Chatbot() {
   const sendMessage = async () => {
     if (!input.trim()) return;
     const userText = input.trim();
-    
+
     // Add user message to UI immediately
     setMessages((m) => [...m, { role: "user", text: userText }]);
     setInput(""); setLoading(true);
@@ -46,10 +46,10 @@ export default function Chatbot() {
       // Fetch response from AI Service
       const data = await queryAI(userText, 3);
       setMessages((m) => [...m, { role: "bot", text: data.answer || "I couldn't find an accurate answer." }]);
-    } catch (err) { 
-      setMessages((m) => [...m, { role: "bot", text: "Error connecting to AI service." }]); 
-    } finally { 
-      setLoading(false); 
+    } catch (err) {
+      setMessages((m) => [...m, { role: "bot", text: "Error connecting to AI service." }]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -57,26 +57,21 @@ export default function Chatbot() {
   const onKeyDown = (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } };
 
   return (
-    <div className="relative">
-      {/* Toggle Button */}
-      <button ref={buttonRef} type="button" onClick={() => setOpen((o) => !o)} className="h-11 w-11 rounded-full bg-blue-600 text-white shadow-md hover:bg-blue-700 hover:scale-105 transition-all flex items-center justify-center" aria-label="Open AI Assistant">
-        {open ? <X size={20} /> : <MessageSquare size={20} fill="currentColor" />}
-      </button>
-
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
       {/* Chat Panel Window */}
       {open && (
-        <div 
-          ref={panelRef} 
+        <div
+          ref={panelRef}
           className={`
-            fixed top-24 left-1/2 -translate-x-1/2 w-[85vw] sm:w-96 z-50 
-            md:absolute md:top-full md:right-0 md:left-auto md:translate-x-0 md:mt-3 
-            max-h-[600px] h-[550px] bg-white rounded-2xl shadow-2xl border border-slate-200 
-            flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200 origin-top
+            absolute bottom-20 right-0 w-[85vw] sm:w-96 
+            max-h-[600px] h-[500px] bg-white rounded-2xl shadow-2xl border border-slate-200 
+            flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-10 duration-200 origin-bottom-right
           `}
         >
           {/* Header */}
           <div className="px-4 py-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
             <div className="flex items-center gap-2"><Sparkles className="text-blue-600" size={18} /><div className="font-bold text-slate-800 text-sm">Enjez AI Assistant</div></div>
+            <button onClick={() => setOpen(false)} className="p-1 hover:bg-slate-200 rounded-full transition-colors"><X size={16} className="text-slate-500" /></button>
           </div>
 
           {/* Messages Body (Scrollable) */}
@@ -95,12 +90,17 @@ export default function Chatbot() {
           {/* Input Footer */}
           <div className="p-3 border-t border-slate-100 bg-slate-50">
             <div className="flex gap-2 relative">
-                <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={onKeyDown} placeholder="How can I help you?" className="flex-1 rounded-xl border border-slate-200 pl-3 pr-10 py-2.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white" autoFocus />
-                <button onClick={sendMessage} disabled={loading || !input.trim()} className="absolute right-1.5 top-1.5 p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"><MessageSquare size={18} className={input.trim() ? "fill-blue-600" : ""} /></button>
+              <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={onKeyDown} placeholder="How can I help you?" className="flex-1 rounded-xl border border-slate-200 pl-3 pr-10 py-2.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white" autoFocus />
+              <button onClick={sendMessage} disabled={loading || !input.trim()} className="absolute right-1.5 top-1.5 p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"><MessageSquare size={18} className={input.trim() ? "fill-blue-600" : ""} /></button>
             </div>
           </div>
         </div>
       )}
+
+      {/* Toggle Button */}
+      <button ref={buttonRef} type="button" onClick={() => setOpen((o) => !o)} className="h-14 w-14 rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-700 hover:scale-105 transition-all flex items-center justify-center" aria-label="Open AI Assistant">
+        {open ? <X size={24} /> : <MessageSquare size={24} fill="currentColor" />}
+      </button>
     </div>
   );
 }

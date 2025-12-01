@@ -11,7 +11,6 @@ import { Menu, X } from "lucide-react"; // Import Icons
 
 // Child Components
 import ClientNotificationsDropdown from "../common/client/NotificationsDropdown.jsx";
-import Chatbot from "../common/client/Chatbot.jsx";
 import MobileMenuDrawer from "./MobileMenuDrawer.jsx"; // Import new component
 
 export default function Navbar() {
@@ -39,7 +38,7 @@ export default function Navbar() {
 
   const handleLogout = async () => { try { await signOut(getAuth()); navigate("/login"); } catch (error) { console.error("Error logging out:", error); } };
   const username = user?.username || (user?.email ? user.email.split("@")[0] : "User");
-  
+
   const notificationsQuery = useMemo(() => user ? query(collection(db, "notifications"), where("role", "==", "user"), where("userId", "==", user.uid)) : null, [user]);
   const { notifications } = useNotifications(notificationsQuery);
   const unreadCount = useMemo(() => notifications.filter((n) => !n.read).length, [notifications]);
@@ -57,7 +56,7 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/90 backdrop-blur-md shadow-sm transition-all duration-300">
       <div className="max-w-7xl mx-auto h-20 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        
+
         {/* Logo */}
         <Link to="/home" className="flex items-center gap-2 group"><img src={logo} alt="Enjez logo" className="h-14 w-auto object-contain cursor-pointer transition-transform duration-500 group-hover:scale-105 drop-shadow-sm" /></Link>
 
@@ -78,7 +77,6 @@ export default function Navbar() {
           ) : (
             <div className="flex items-center gap-3 sm:gap-4">
               <span className="hidden lg:inline text-sm text-slate-600 font-medium bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">Hi, <span className="text-slate-900 font-bold">{username}</span></span>
-              <Chatbot />
               <div className="relative" ref={dropdownRef}>
                 <button type="button" onClick={() => setShowNotifications((prev) => !prev)} className={`h-11 w-11 rounded-full flex items-center justify-center transition-all duration-200 relative ${showNotifications ? "bg-blue-100 text-blue-600 ring-2 ring-blue-200" : "bg-white border border-slate-200 text-slate-500 hover:text-blue-600 hover:border-blue-300 hover:shadow-md"}`}>
                   <span className="material-symbols-outlined text-[22px]">notifications</span>
@@ -86,6 +84,9 @@ export default function Navbar() {
                 </button>
                 <ClientNotificationsDropdown open={showNotifications} onNavigate={() => setShowNotifications(false)} />
               </div>
+              <Link to="/profile" className="hidden md:flex h-11 w-11 rounded-full border border-slate-200 text-slate-600 items-center justify-center hover:bg-slate-50 hover:text-blue-600 hover:border-blue-200 transition-all duration-200" title="Profile">
+                <span className="material-symbols-outlined text-[22px]">person</span>
+              </Link>
               <button onClick={handleLogout} className="hidden md:flex h-11 px-6 rounded-xl border border-slate-200 text-sm font-bold text-slate-600 items-center justify-center hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-all duration-200">Logout</button>
             </div>
           )}
