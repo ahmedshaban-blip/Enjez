@@ -1,14 +1,15 @@
 // src/pages/admin/AdminDashboard.jsx
 import React, { useEffect, useState } from "react";
+import { useAuth } from "../../context/AuthContext.jsx";
 import { getAllDocs } from "../../utils/firebaseHelpers.js";
 import { buildDashboardData } from "../../utils/adminDashboardUtils.js";
-import { auth } from "../../config/firebase.js";
 
 import AdminStatsCards from "../../components/admin/AdminStatsCards.jsx";
 import AdminBookingTrends from "../../components/admin/AdminBookingTrends.jsx";
 import AdminRecentActivity from "../../components/admin/AdminRecentActivity.jsx";
 
 export default function AdminDashboard() {
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -23,7 +24,7 @@ export default function AdminDashboard() {
   const [monthlyStats, setMonthlyStats] = useState([]);
   const [recentBookings, setRecentBookings] = useState([]);
 
-  const [userName, setUserName] = useState("Admin");
+  const userName = user?.username || (user?.email ? user.email.split("@")[0] : "Admin");
 
   useEffect(() => {
     let isMounted = true;
@@ -33,21 +34,6 @@ export default function AdminDashboard() {
         setLoading(true);
         setError("");
 
-        // ---- اسم اليوزر من Firebase Auth ----
-        const currentUser = auth.currentUser;
-        if (currentUser && isMounted) {
-          const nameFromAuth =
-            currentUser.displayName ||
-            currentUser.fullName ||
-            currentUser.name ||
-            (currentUser.email
-              ? currentUser.email.split("@")[0]
-              : "Admin");
-
-          setUserName(nameFromAuth);
-        }
-
-        // ---- البيانات من Firestore ----
         const [bookings, users, services] = await Promise.all([
           getAllDocs("bookings"),
           getAllDocs("users"),
@@ -101,12 +87,13 @@ export default function AdminDashboard() {
 
       {/* Chart + Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <AdminBookingTrends
-          loading={loading}
-          weeklyStats={weeklyStats}
-          monthlyStats={monthlyStats}
-        />
-
+        <div className="lg:col-span-2">
+          <AdminBookingTrends
+            loading={loading}
+            weeklyStats={weeklyStats}
+            monthlyStats={monthlyStats}
+          />
+        </div>
         <AdminRecentActivity
           loading={loading}
           recentBookings={recentBookings}
