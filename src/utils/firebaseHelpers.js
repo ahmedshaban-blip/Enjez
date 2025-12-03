@@ -7,11 +7,16 @@ import {
   doc,
   updateDoc,
   deleteDoc,
+  setDoc, // Added setDoc
   Timestamp,
   query,
   where,
 } from "firebase/firestore";
+import { deleteApp } from "firebase/app"; // Added deleteApp for cleanup
 import { db } from "../config/firebase.js";
+import { initializeApp } from "firebase/app";
+import { getAuth, createUserWithEmailAndPassword, signOut } from "firebase/auth";
+import { firebaseConfig } from "../config/firebase.js";
 
 // ===== Default structures =====
 
@@ -120,11 +125,45 @@ export const deleteDocById = async (collectionName, id) => {
 };
 
 // ========== Specific create functions ==========
-export const createUser = (data) => createDoc("users", data);
+// ========== Specific create functions ==========
+export const createUser = (data, customId = null) => {
+  if (customId) {
+    // If we have a custom ID (like Auth UID), use setDoc
+    return setDoc(doc(db, "users", customId), data).then(() => customId);
+  }
+  return createDoc("users", data);
+};
+
+// Helper to create Auth user without logging out the current admin
+export const createAuthUser = async (email, password) => {
+  let secondaryApp;
+  try {
+    // 1. Initialize a secondary app instance
+    secondaryApp = initializeApp(firebaseConfig, "Secondary");
+    const secondaryAuth = getAuth(secondaryApp);
+
+    // 2. Create the user in the secondary app
+    const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
+    const user = userCredential.user;
+
+    // 3. Sign out immediately to avoid any session conflicts (though secondary app shouldn't affect main)
+    await signOut(secondaryAuth);
+
+    return user.uid;
+  } catch (error) {
+    console.error("Error creating auth user:", error);
+    throw error;
+  } finally {
+    // 4. Delete the secondary app to clean up
+    if (secondaryApp) {
+      await deleteApp(secondaryApp);
+    }
+  }
+};
 export const createService = (data) => createDoc("services", data);
 export const createBooking = async (data) => {
   const docRef = await addDoc(collection(db, "bookings"), data);
-  return docRef.id; 
+  return docRef.id;
 };
 export const createAgent = (data) => createDoc("agents", data);
 export const createCategory = (data) => createDoc("categories", data);
