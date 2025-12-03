@@ -62,13 +62,32 @@ export default function AdminLayout() {
 
   useEffect(() => {
     setShowNotifications(false);
+    setSidebarOpen(false);
   }, [location.pathname]);
 
   return (
     <div className={`min-h-screen bg-slate-50 flex font-sans ${sidebarOpen ? 'open' : ''}`}>
+      {/* Mobile Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-20 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar component */}
-      <div className={`w-64 bg-white border-r border-slate-200 flex-col-reverse fixed top-0 left-0 h-full z-20 transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
-        <AdminSidebar />
+      <div className={`w-64 bg-white border-r border-slate-200 flex-col-reverse fixed top-0 left-0 h-full z-30 transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
+        <div className="relative h-full flex flex-col">
+          {/* Close Button (Mobile Only) */}
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="absolute top-4 right-4 p-1 text-slate-400 hover:text-slate-600 md:hidden"
+          >
+            <span className="material-symbols-outlined">close</span>
+          </button>
+
+          <AdminSidebar />
+        </div>
       </div>
 
       {/* Right side */}

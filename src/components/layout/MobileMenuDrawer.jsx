@@ -11,8 +11,7 @@ export default function MobileMenuDrawer({ isOpen, onClose, links, user, onLogou
           to={link.to}
           onClick={onClose}
           className={({ isActive }) =>
-            `px-4 py-3 rounded-xl text-base font-bold transition-all ${
-              isActive ? "bg-blue-50 text-blue-700" : "text-slate-600 hover:bg-slate-50"
+            `px-4 py-3 rounded-xl text-base font-bold transition-all ${isActive ? "bg-blue-50 text-blue-700" : "text-slate-600 hover:bg-slate-50"
             }`
           }
         >
@@ -27,12 +26,22 @@ export default function MobileMenuDrawer({ isOpen, onClose, links, user, onLogou
             <Link to="/signup" onClick={onClose} className="w-full py-3 rounded-xl text-center bg-blue-600 text-white font-bold hover:bg-blue-700">Sign Up</Link>
           </>
         ) : (
-          <button
-            onClick={() => { onLogout(); onClose(); }}
-            className="w-full py-3 rounded-xl text-center text-red-600 font-bold bg-red-50 hover:bg-red-100"
-          >
-            Logout
-          </button>
+          <>
+            <Link
+              to="/profile"
+              onClick={onClose}
+              className="w-full py-3 rounded-xl text-center text-slate-600 font-bold bg-slate-50 hover:bg-slate-100 flex items-center justify-center gap-2"
+            >
+              <span className="material-symbols-outlined text-xl">person</span>
+              Profile
+            </Link>
+            <button
+              onClick={() => { onLogout(); onClose(); }}
+              className="w-full py-3 rounded-xl text-center text-red-600 font-bold bg-red-50 hover:bg-red-100"
+            >
+              Logout
+            </button>
+          </>
         )}
       </div>
     </div>
