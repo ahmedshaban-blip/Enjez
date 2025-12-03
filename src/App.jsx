@@ -29,7 +29,7 @@ import Bookings from "./pages/admin/Bookings.jsx";
 import Clients from "./pages/admin/Clients.jsx";
 import AdminServices from "./pages/admin/Services.jsx";
 import Reports from "./pages/admin/Reports.jsx";
-import Settings from "./pages/admin/Settings.jsx";
+import AdminProfile from "./pages/admin/Profile.jsx";
 import NotFound from './pages/NotFound.jsx';
 import Notifications from './pages/admin/Notifications.jsx';
 import ResetPassword from './pages/auth/ResetPassword.jsx';
@@ -79,7 +79,7 @@ function App() {
             <Route path="clients" element={<Clients />} />
             <Route path="services" element={<AdminServices />} />
             <Route path="reports" element={<Reports />} />
-            <Route path="settings" element={<Settings />} />
+            <Route path="profile" element={<AdminProfile />} />
             <Route path="form-service" element={<ServiceForm />} />
             <Route path="form-service/:id" element={<ServiceForm />} />
             <Route path="notifications" element={<Notifications />} />

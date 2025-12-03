@@ -17,10 +17,9 @@ export default function AdminSidebar() {
             to="/admin"
             end
             className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium ${
-                isActive
-                  ? "bg-blue-50 text-blue-600"
-                  : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
+              `flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium ${isActive
+                ? "bg-blue-50 text-blue-600"
+                : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
               }`
             }
           >
@@ -33,10 +32,9 @@ export default function AdminSidebar() {
           <NavLink
             to="/admin/bookings"
             className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium ${
-                isActive
-                  ? "bg-blue-50 text-blue-600"
-                  : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
+              `flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium ${isActive
+                ? "bg-blue-50 text-blue-600"
+                : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
               }`
             }
           >
@@ -49,10 +47,9 @@ export default function AdminSidebar() {
           <NavLink
             to="/admin/clients"
             className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium ${
-                isActive
-                  ? "bg-blue-50 text-blue-600"
-                  : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
+              `flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium ${isActive
+                ? "bg-blue-50 text-blue-600"
+                : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
               }`
             }
           >
@@ -63,10 +60,9 @@ export default function AdminSidebar() {
           <NavLink
             to="/admin/services"
             className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium ${
-                isActive
-                  ? "bg-blue-50 text-blue-600"
-                  : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
+              `flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium ${isActive
+                ? "bg-blue-50 text-blue-600"
+                : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
               }`
             }
           >
@@ -77,10 +73,9 @@ export default function AdminSidebar() {
           <NavLink
             to="/admin/categories"
             className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium ${
-                isActive
-                  ? "bg-blue-50 text-blue-600"
-                  : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
+              `flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium ${isActive
+                ? "bg-blue-50 text-blue-600"
+                : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
               }`
             }
           >
@@ -91,10 +86,9 @@ export default function AdminSidebar() {
           <NavLink
             to="/admin/agents"
             className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium ${
-                isActive
-                  ? "bg-blue-50 text-blue-600"
-                  : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
+              `flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium ${isActive
+                ? "bg-blue-50 text-blue-600"
+                : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
               }`
             }
           >
@@ -105,10 +99,9 @@ export default function AdminSidebar() {
           <NavLink
             to="/admin/notifications"
             className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium ${
-                isActive
-                  ? "bg-blue-50 text-blue-600"
-                  : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
+              `flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium ${isActive
+                ? "bg-blue-50 text-blue-600"
+                : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
               }`
             }
           >
@@ -121,10 +114,9 @@ export default function AdminSidebar() {
           <NavLink
             to="/admin/reports"
             className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium ${
-                isActive
-                  ? "bg-blue-50 text-blue-600"
-                  : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
+              `flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium ${isActive
+                ? "bg-blue-50 text-blue-600"
+                : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
               }`
             }
           >
@@ -138,19 +130,18 @@ export default function AdminSidebar() {
         {/* bottom nav */}
         <div className="flex flex-col gap-1 pb-2">
           <NavLink
-            to="/admin/settings"
+            to="/admin/profile"
             className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium ${
-                isActive
-                  ? "bg-blue-50 text-blue-600"
-                  : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
+              `flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium ${isActive
+                ? "bg-blue-50 text-blue-600"
+                : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
               }`
             }
           >
             <span className="material-symbols-outlined text-2xl">
-              settings
+              person
             </span>
-            Settings
+            Profile
           </NavLink>
 
           <Link

@@ -247,7 +247,7 @@ const Agents = () => {
             Save Agent
           </button>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-col md:flex-row gap-3">
           <input
             value={name}
             type="text"
@@ -298,10 +298,10 @@ const Agents = () => {
           <thead className="bg-gray-100 dark:bg-gray-800">
             <tr>
               <th className="px-6 py-3">Name</th>
-              <th className="px-6 py-3">Email</th>
-              <th className="px-6 py-3">Phone</th>
+              <th className="hidden md:table-cell px-6 py-3">Email</th>
+              <th className="hidden md:table-cell px-6 py-3">Phone</th>
               <th className="px-6 py-3">Services</th>
-              <th className="px-6 py-3">Created</th>
+              <th className="hidden md:table-cell px-6 py-3">Created</th>
               <th className="px-6 py-3">Actions</th>
             </tr>
           </thead>
@@ -327,8 +327,8 @@ const Agents = () => {
                     className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
                   >
                     <td className="px-6 py-4">{agent.name}</td>
-                    <td className="px-6 py-4">{agent.email || "—"}</td>
-                    <td className="px-6 py-4">{agent.phone || "—"}</td>
+                    <td className="hidden md:table-cell px-6 py-4">{agent.email || "—"}</td>
+                    <td className="hidden md:table-cell px-6 py-4">{agent.phone || "—"}</td>
 
                     <td className="px-6 py-4">
                       {serviceNames.length > 0
@@ -336,11 +336,11 @@ const Agents = () => {
                         : "No services"}
                     </td>
 
-                    <td className="px-6 py-4">
+                    <td className="hidden md:table-cell px-6 py-4">
                       {agent.createdAt?.seconds
                         ? new Date(
-                            agent.createdAt.seconds * 1000
-                          ).toLocaleDateString()
+                          agent.createdAt.seconds * 1000
+                        ).toLocaleDateString()
                         : "—"}
                     </td>
 
@@ -372,12 +372,12 @@ const Agents = () => {
           </tbody>
         </table>
         <Pagination
-        total={agents.length}
-        perPage={perPage}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-      />
-      </div>  
+          total={agents.length}
+          perPage={perPage}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+      </div>
     </div>
   );
 };
