@@ -25,9 +25,9 @@ export const ServicesTable = ({ services, error, handleDelete }) => {
       <thead className="text-xs uppercase bg-gray-50 dark:bg-gray-800">
         <tr>
           <th className="px-6 py-3">Service</th>
-          <th className="px-6 py-3">Category</th>
+          <th className="hidden md:table-cell px-6 py-3">Category</th>
           <th className="px-6 py-3">Price</th>
-          <th className="px-6 py-3">Duration</th>
+          <th className="hidden md:table-cell px-6 py-3">Duration</th>
           <th className="px-6 py-3">Status</th>
           <th className="px-6 py-3">Actions</th>
         </tr>
@@ -92,11 +92,11 @@ export const ServicesTable = ({ services, error, handleDelete }) => {
                 </div>
               </td>
 
-              <td className="px-6 py-4">{service.categoryName || "—"}</td>
+              <td className="hidden md:table-cell px-6 py-4">{service.categoryName || "—"}</td>
 
               <td className="px-6 py-4">{formatPrice(service.price)}</td>
 
-              <td className="px-6 py-4">{formatDuration(service.duration)}</td>
+              <td className="hidden md:table-cell px-6 py-4">{formatDuration(service.duration)}</td>
 
               <td className="px-6 py-4">
                 <span

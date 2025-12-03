@@ -66,19 +66,29 @@ export default function AdminLayout() {
   }, [location.pathname]);
 
   return (
-    <div className={`min-h-screen bg-slate-50 flex font-sans ${sidebarOpen ? 'open' : ''}`}>
+    <div className={`min-h-screen bg-slate-50 flex flex-col md:flex-row font-sans`}>
       {/* Mobile Overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-20 md:hidden"
+          className="fixed inset-0 bg-black/50 z-30 md:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar component */}
-      <div className={`w-64 bg-white border-r border-slate-200 flex-col-reverse fixed top-0 left-0 h-full z-30 transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
+      <div
+        className={`
+          fixed md:sticky top-16 md:top-0 left-0 
+          h-[calc(100vh-4rem)] md:h-screen 
+          w-64 bg-white border-r border-slate-200 
+          z-40 md:z-auto 
+          transition-transform duration-300 ease-in-out 
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
+          md:translate-x-0
+        `}
+      >
         <div className="relative h-full flex flex-col">
-          {/* Close Button (Mobile Only) */}
+          {/* Close Button (Mobile Only) - Optional now since burger is visible, but good to keep */}
           <button
             onClick={() => setSidebarOpen(false)}
             className="absolute top-4 right-4 p-1 text-slate-400 hover:text-slate-600 md:hidden"
@@ -91,16 +101,18 @@ export default function AdminLayout() {
       </div>
 
       {/* Right side */}
-      <div className="flex-1 md:ml-64 flex flex-col">
-        {/* Topbar */}
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-8">
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Topbar - Sticky */}
+        <header className="sticky top-0 z-50 h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-8">
           <div className="flex items-center gap-4">
             <button
               type="button"
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="md:hidden h-10 w-10 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 hover:border-blue-200 transition"
             >
-              <span className="material-symbols-outlined text-xl">menu</span>
+              <span className="material-symbols-outlined text-xl">
+                {sidebarOpen ? 'close' : 'menu'}
+              </span>
             </button>
             <h2 className="text-xl font-bold text-slate-900 hidden md:block">
               {location.pathname === '/admin' ? 'Dashboard' : location.pathname.split('/').pop().charAt(0).toUpperCase() + location.pathname.split('/').pop().slice(1)}
@@ -173,7 +185,7 @@ export default function AdminLayout() {
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-4 md:p-8 bg-slate-50">
+        <main className="flex-1 p-4 md:p-8 bg-slate-50 overflow-y-auto">
           <Outlet />
         </main>
       </div>
