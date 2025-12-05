@@ -21,6 +21,7 @@ export default function Home() {
     setLoadingServices(true);
     getAllServices()
       .then((data) => {
+        console.log("Featured Services Data:", data);
         setFeaturedServices(data.slice(0, 5));
       })
       .catch(console.error)
