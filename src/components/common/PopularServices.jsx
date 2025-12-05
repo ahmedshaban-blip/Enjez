@@ -36,7 +36,7 @@ export default function PopularServices({ services, loading }) {
                 className="group relative aspect-[5/6] overflow-hidden rounded-2xl cursor-pointer shadow-md hover:shadow-xl transition-all hover:-translate-y-1"
               >
                 <img
-                  src={s.images?.[0] || "https://via.placeholder.com/400"}
+                  src={s.images?.[0]?.url || "https://via.placeholder.com/400"}
                   alt={s.name}
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
